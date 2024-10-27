@@ -6,17 +6,17 @@ namespace Main.Scripts
     {
         public static GameController Instance { get; private set; }
         
-        public GUIController guiController;
+        public DataManager DataManager;
         public BoardManager boardManager;
-        public SceneChangeManager sceneChangeManager;
         
         private void Awake()
         {
             Instance = this;
             
-            guiController.Bind();
+            DataManager = new DataManager();
+            
+            DataManager.Bind();
             boardManager.Bind();
-            sceneChangeManager.Bind();
         }
     }
 }
