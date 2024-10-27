@@ -10,7 +10,7 @@ namespace Main.Scripts
         [SerializeField] private Color colorRed;
         [SerializeField] private Color colorYellow;
         
-        private const float CellWidth = 1;
+        public const float CellWidth = 1;
         
         public GameObject cellPrefab;
         public GameObject gatePrefab;
