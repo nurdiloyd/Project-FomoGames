@@ -8,7 +8,7 @@ namespace Main.Scripts
         private Vector3 _endPosition;
         private BlockView _blockView;
         private bool _blockSelected;
-        private const float SwipeLengthThreshold = 0.3f;
+        private const float SwipeLengthThreshold = 0.25f;
         private const float SwipeAngleThreshold = 30f;
         private CameraManager _cameraManager;
         
@@ -25,7 +25,7 @@ namespace Main.Scripts
                 
                 var ray = _cameraManager.ScreenPointToRay(_startPosition);
                 var isHit = Physics.Raycast(ray, out var hit);
-                if (isHit && hit.transform.CompareTag("Block"))
+                if (isHit && hit.transform.CompareTag(Constants.BlockTag))
                 {
                     _blockSelected = true;
                     _blockView = hit.transform.GetComponent<BlockView>();
@@ -39,22 +39,23 @@ namespace Main.Scripts
                 
                 var toward = _endPosition - _startPosition;
                 var rad = (int)Mathf.Round(Vector2.SignedAngle(Vector2.right, toward) / 90f);
-                var moveDirection = new Vector2((1 - Mathf.Abs(rad)) % 2, rad % 2);
+                var direction = new Vector2((1 - Mathf.Abs(rad)) % 2, rad % 2);
+                var moveDirection = GameBoard.DirectionVectorToEnum(direction);
                 
                 if (_blockView.CanMoveOnDirection(moveDirection))
                 {
                     var worldPointA = _startPosition;
-                    worldPointA.z = _cameraManager.renderDistance+0.1f;
+                    worldPointA.z = _cameraManager.RenderDistance+0.1f;
                     worldPointA = _cameraManager.ScreenToWorldPoint(worldPointA);
                 
                     var worldPointB = _endPosition;
-                    worldPointB.z = _cameraManager.renderDistance+0.1f;
+                    worldPointB.z = _cameraManager.RenderDistance+0.1f;
                     worldPointB = _cameraManager.ScreenToWorldPoint(worldPointB);
+                    
                     var worldDistance = (worldPointA - worldPointB).magnitude;
+                    var angle = Vector2.Angle(toward, direction);
                     
-                    var angle = Vector2.Angle(toward, moveDirection);
                     var canMove = worldDistance > GameBoard.CellWidth * SwipeLengthThreshold && angle < SwipeAngleThreshold;
-                    
                     if (canMove)
                     {
                         _blockSelected = false;

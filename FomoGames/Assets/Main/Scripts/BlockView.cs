@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 namespace Main.Scripts
@@ -6,18 +7,22 @@ namespace Main.Scripts
     {
         [SerializeField] private MeshRenderer meshRenderer;
         
-        public void Init()
+        private Direction _direction;
+        
+        public void Init(Direction direction)
         {
+            _direction = direction;
         }
         
-        public bool CanMoveOnDirection(Vector2 direction)
+        public bool CanMoveOnDirection(Direction direction)
         {
-            return true;
+            return _direction == direction || _direction == direction.GetInverse();
         }
         
-        public void Move(Vector2 direction)
+        public void Move(Direction direction)
         {
-            
+            var toPosition = transform.position;// + new Vector3(direction.x, 0, direction.y);
+            transform.DOMove(toPosition, 0.5f);
         }
         
         public void Select()

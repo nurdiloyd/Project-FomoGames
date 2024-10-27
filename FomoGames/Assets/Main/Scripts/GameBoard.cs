@@ -14,8 +14,8 @@ namespace Main.Scripts
         
         public GameObject cellPrefab;
         public GameObject gatePrefab;
-        public GameObject block1Prefab;
-        public GameObject block2Prefab;
+        public BlockView block1Prefab;
+        public BlockView block2Prefab;
         public Texture2D block1TextureBlueParallel;
         public Texture2D block1TextureBlueUp;
         public Texture2D block1TextureGreenParallel;
@@ -80,8 +80,10 @@ namespace Main.Scripts
                 var position = GetPosition(i, j);
                 var rotation = GetRotation((direction + 1) % 2);
                 
-                var block = Instantiate(blockPrefab, position, rotation, transform);
-                var meshRenderer = block.transform.GetChild(0).GetComponent<MeshRenderer>();
+                var blockView = Instantiate(blockPrefab, position, rotation, transform);
+                blockView.Init((Direction)direction);
+                
+                var meshRenderer = blockView.transform.GetChild(0).GetComponent<MeshRenderer>();
                 meshRenderer.material.mainTexture = GetBlockTexture(movableInfo.Length, movableInfo.Colors, movableInfo.Direction[0]);
             }
         }
@@ -120,8 +122,8 @@ namespace Main.Scripts
                 _ => Color.white
             };
         }
-
-        private GameObject GetBlockPrefab(int length)
+        
+        private BlockView GetBlockPrefab(int length)
         {
             return length switch
             {
@@ -168,5 +170,37 @@ namespace Main.Scripts
         {
             return _initialPosition + new Vector3(j, 0f, -i) * CellWidth;
         }
+        
+        public static Direction DirectionVectorToEnum(Vector2 moveDirection)
+        {
+            if (moveDirection == Vector2.up)
+            {
+                return Direction.Up;
+            }
+            else if (moveDirection == Vector2.right)
+            {
+                return Direction.Right;
+            }
+            else if (moveDirection == Vector2.down)
+            {
+                return Direction.Down;
+            }
+            else if (moveDirection == Vector2.left)
+            {
+                return Direction.Left;
+            }
+            else
+            {
+                return Direction.Up;
+            }
+        }
+    }
+    
+    public enum Direction
+    {
+        Up,
+        Right,
+        Down,
+        Left
     }
 }

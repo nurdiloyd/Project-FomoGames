@@ -10,7 +10,7 @@ namespace Main.Scripts
         private static readonly string LevelsPath = Path.Combine(PersistentPath, "Levels");
         
         private LevelData[] _levelData;
-        private int _currentLevelIndex;
+        private int _currentLevelIndex = 3;
         
         public void Bind()
         {

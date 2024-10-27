@@ -5,11 +5,11 @@ namespace Main.Scripts
     public class CameraManager : MonoBehaviour
     {
         public Camera mainCamera;
-        public float renderDistance;
+        public float RenderDistance { get; private set; }
         
         public void Bind()
         {
-            renderDistance = mainCamera.nearClipPlane;
+            RenderDistance = mainCamera.nearClipPlane;
         }
         
         public Vector3 ScreenToWorldPoint(Vector3 screenPoint)
