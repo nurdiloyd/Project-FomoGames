@@ -42,14 +42,14 @@ namespace Main.Scripts
                 var direction = new Vector2((1 - Mathf.Abs(rad)) % 2, rad % 2);
                 var moveDirection = GameBoard.DirectionVectorToEnum(direction);
                 
-                if (_blockView.CanMoveOnDirection(moveDirection))
+                if (_blockView.CanMoveOnAxis(moveDirection))
                 {
                     var worldPointA = _startPosition;
-                    worldPointA.z = _cameraManager.RenderDistance+0.1f;
+                    worldPointA.z = _cameraManager.RenderDistance + 0.1f;
                     worldPointA = _cameraManager.ScreenToWorldPoint(worldPointA);
                 
                     var worldPointB = _endPosition;
-                    worldPointB.z = _cameraManager.RenderDistance+0.1f;
+                    worldPointB.z = _cameraManager.RenderDistance + 0.1f;
                     worldPointB = _cameraManager.ScreenToWorldPoint(worldPointB);
                     
                     var worldDistance = (worldPointA - worldPointB).magnitude;

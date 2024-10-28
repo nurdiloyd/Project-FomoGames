@@ -8,7 +8,7 @@ namespace Main.Scripts
         [SerializeField] private MeshRenderer meshRenderer;
         
         private GameBoard _gameBoard;
-        private int _id;
+        public int ID { get; private set; }
         public int PivotI { get; private set; }
         public int PivotJ { get; private set; }
         public int RowCount { get; private set; }
@@ -16,25 +16,30 @@ namespace Main.Scripts
         
         private Direction _direction;
         
-        public void Init(GameBoard gameBoard, int id, int pivotI, int pivotJ, int length, Direction direction)
+        public void Init(GameBoard gameBoard, int id, int length, Direction direction, Texture texture)
         {
-            _id = id;
-            PivotI = pivotI;
-            PivotJ = pivotJ;
+            ID = id;
             _gameBoard = gameBoard;
             _direction = direction;
             RowCount = direction.IsHorizontal() ? 1 : length;
             ColumnCount = direction.IsVertical() ? 1 : length;
+            meshRenderer.material.mainTexture = texture;
         }
         
-        public bool CanMoveOnDirection(Direction direction)
+        public void SetPivot(int pivotI, int pivotJ)
+        {
+            PivotI = pivotI;
+            PivotJ = pivotJ;
+        }
+        
+        public bool CanMoveOnAxis(Direction direction)
         {
             return _direction == direction || _direction == direction.GetInverse();
         }
         
         public void Move(Direction direction)
         {
-            var toPosition = _gameBoard.GetTargetPosition(_id, direction);
+            var toPosition = _gameBoard.GetTargetPosition(ID, direction);
             
             transform.DOMove(toPosition, 0.1f).SetEase(Ease.Linear);
         }

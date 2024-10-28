@@ -38,32 +38,27 @@ namespace Main.Scripts
         public Texture2D block2TextureYellowUp;
         
         private int[,] _board;
-        private Dictionary<int, BlockView> _blocks = new();
+        private readonly Dictionary<int, BlockView> _blocks = new();
         private Vector3 _initialPosition;
         private int _boardTop;
         private int _boardRight;
         private int _boardBottom;
         private int _boardLeft;
+        private int _rowCount;
+        private int _columnCount;
         
         public void Init(LevelData levelData)
         {
-            var columnCount = levelData.ColCount;
-            var rowCount = levelData.RowCount;
-            _board = new int[rowCount, columnCount];
+            _rowCount = levelData.RowCount;
+            _columnCount = levelData.ColCount;
             
-            _initialPosition = new Vector3((1 - columnCount) / 2f, 0f, -(1 - rowCount) / 2f) * CellWidth;
             _boardTop = 0;
-            _boardRight = columnCount - 1;
-            _boardBottom = rowCount - 1;
+            _boardRight = _columnCount - 1;
+            _boardBottom = _rowCount - 1;
             _boardLeft = 0;
             
-            for (var i = 0; i < rowCount; i++)
-            {
-                for (var j = 0; j < columnCount; j++)
-                {
-                    _board[i, j] = -1;
-                }
-            }
+            _initialPosition = new Vector3((1 - _columnCount) / 2f, 0f, -(1 - _rowCount) / 2f) * CellWidth;
+            _board = new int[_rowCount, _columnCount];
             
             PlaceBlocks(levelData.MovableInfo);
             PlaceGates(levelData.ExitInfo);
@@ -71,6 +66,14 @@ namespace Main.Scripts
         
         private void PlaceBlocks(MovableInfo[] movableInfos)
         {
+            for (var i = 0; i < _rowCount; i++)
+            {
+                for (var j = 0; j < _columnCount; j++)
+                {
+                    _board[i, j] = -1;
+                }
+            }
+            
             for (var index = 0; index < movableInfos.Length; index++)
             {
                 var movableInfo = movableInfos[index];
@@ -81,28 +84,49 @@ namespace Main.Scripts
                 var blockPrefab = GetBlockPrefab(length);
                 var position = GetPosition(i, j);
                 var rotation = GetRotation((direction + 1) % 2);
+                var id = index;
+                var texture = GetBlockTexture(length, movableInfo.Colors, (Direction)direction);
                 
                 var blockView = Instantiate(blockPrefab, position, rotation, transform);
-                blockView.Init(this, index, i, j, length, (Direction)direction);
-                _blocks.Add(index, blockView);
+                blockView.Init(this, id, length, (Direction)direction, texture);
+                _blocks.Add(blockView.ID, blockView);
                 
-                var meshRenderer = blockView.transform.GetChild(0).GetComponent<MeshRenderer>();
-                meshRenderer.material.mainTexture = GetBlockTexture(movableInfo.Length, movableInfo.Colors, movableInfo.Direction[0]);
-                
-                PlaceBlockToBoard(i, j, index, length, (Direction)direction);
+                PlaceBlockToBoard(blockView.ID, i, j);
             }
         }
         
-        private void PlaceBlockToBoard(int i, int j, int id, int length, Direction direction)
+        private void PlaceBlockToBoard(int id, int pivotI, int pivotJ)
         {
-            var iOffset = i + (direction == Direction.Up || direction == Direction.Down ? length : 1);
-            var jOffset = j + (direction == Direction.Right || direction == Direction.Left ? length : 1);
+            var blockView = _blocks[id];
+            var rowCount = blockView.RowCount;
+            var columnCount = blockView.ColumnCount;
+            blockView.SetPivot(pivotI, pivotJ);
             
-            for (var k = i; k < iOffset; k++)
+            SetBoardCells(pivotI, pivotJ, rowCount, columnCount, id);
+        }
+        
+        private void RemoveBlockFromBoard(int id)
+        {
+            var blockView = _blocks[id];
+            var rowCount = blockView.RowCount;
+            var columnCount = blockView.ColumnCount;
+            var pivotI = blockView.PivotI;
+            var pivotJ = blockView.PivotJ;
+            blockView.SetPivot(-1, -1);
+            
+            SetBoardCells(pivotI, pivotJ, rowCount, columnCount, -1);
+        }
+        
+        private void SetBoardCells(int pivotI, int pivotJ, int rowCount, int columnCount, int id)
+        {
+            var iOffset = pivotI + rowCount;
+            var jOffset = pivotJ + columnCount;
+            
+            for (var i = pivotI; i < iOffset; i++)
             {
-                for (var l = j; l < jOffset; l++)
+                for (var j = pivotJ; j < jOffset; j++)
                 {
-                    _board[k, l] = id;
+                    _board[i, j] = id;
                 }
             }
         }
@@ -152,9 +176,9 @@ namespace Main.Scripts
             };
         }
         
-        private Texture2D GetBlockTexture(int length, int color, int direction)
+        private Texture2D GetBlockTexture(int length, int color, Direction direction)
         {
-            var isParallel = direction == 0 || direction == 2;
+            var isParallel = direction.IsVertical();
             
             return length switch
             {
@@ -223,7 +247,6 @@ namespace Main.Scripts
             var targetI = pivotI;
             var targetJ = pivotJ;
             
-            Debug.Log(direction);
             if (direction == Direction.Down)
             {
                 var bottomEdgeIndexes = new List<List<int>>();
@@ -349,7 +372,30 @@ namespace Main.Scripts
                 targetJ = minJ + 1;
             }
             
+            RemoveBlockFromBoard(blockView.ID);
+            PlaceBlockToBoard(blockView.ID, targetI, targetJ);
+            
             return GetPosition(targetI, targetJ);
+        }
+        
+        private void OnDrawGizmos()
+        {
+            if (_board == null)
+            {
+                return;
+            }
+            
+            for (var i = 0; i < _board.GetLength(0); i++)
+            {
+                for (var j = 0; j < _board.GetLength(1); j++)
+                {
+                    if (_board[i, j] != -1)
+                    {
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawCube(GetPosition(i, j) + Vector3.up*1f, Vector3.one * 0.1f);
+                    }
+                }
+            }
         }
     }
     
