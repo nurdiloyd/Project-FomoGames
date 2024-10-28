@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
+using Math = System.Math;
 
 namespace Main.Scripts
 {
@@ -238,68 +240,94 @@ namespace Main.Scripts
             }
         }
         
-        public Vector3 GetTargetPosition(int id, Direction direction)
+        public void MoveBlock(int id, Direction moveDirection)
         {
             var blockView = _blocks[id];
             var pivotI = blockView.PivotI;
             var pivotJ = blockView.PivotJ;
+            var (targetI, targetJ) = GetTargetIndex(pivotI, pivotJ, blockView.RowCount, blockView.ColumnCount, moveDirection, out var outsideI, out var outsideJ);
+            var difference = Math.Max(Math.Abs(targetI - pivotI), Math.Abs(targetJ - pivotJ));
+            var duration = 0.1f * difference;
+            var targetPosition = GetPosition(targetI, targetJ);
+            var outsidePosition = GetPosition(outsideI, outsideJ);
             
+            var seq = DOTween.Sequence();
+            seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutBack));
+            seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.InBack));
+            
+            RemoveBlockFromBoard(blockView.ID);
+            PlaceBlockToBoard(blockView.ID, targetI, targetJ);
+        }
+        
+        private (int i, int j) GetTargetIndex(int pivotI, int pivotJ, int rowCount, int columnCount, Direction direction, out int outsideI, out int outsideJ)
+        {
             var targetI = pivotI;
             var targetJ = pivotJ;
+            outsideI = targetI;
+            outsideJ = targetJ;
             
             if (direction == Direction.Down)
             {
                 var bottomEdgeIndexes = new List<List<int>>();
                 
-                var i = pivotI + blockView.RowCount - 1;
-                for (var j = pivotJ; j < pivotJ + blockView.ColumnCount; j++)
+                var i = pivotI + rowCount - 1;
+                for (var j = pivotJ; j < pivotJ + columnCount; j++)
                 {
                     bottomEdgeIndexes.Add(new List<int> {i, j});
                 }
                 
+                var goOutside = true;
                 var maxI = _boardBottom + 1;
                 foreach (var bottomEdgeIndex in bottomEdgeIndexes)
                 {
                     for (var k = bottomEdgeIndex[0] + 1; k <= _boardBottom; k++)
                     {
                         var cell = _board[k, bottomEdgeIndex[1]];
-                        if (cell != -1 && cell != id)
+                        if (cell != -1)
                         {
                             if (maxI > k)
                             {
                                 maxI = k;
                             }
                             
+                            goOutside = false;
+                            
                             break;
                         }
                     }
                 }
                 
-                targetI = maxI - blockView.RowCount;
+                targetI = maxI - rowCount;
                 targetJ = pivotJ;
+                
+                outsideI = !goOutside ? targetI : _boardBottom + 1;
+                outsideJ = targetJ;
             }
             else if (direction == Direction.Up)
             {
                 var topEdgeIndexes = new List<List<int>>();
                 
                 var i = pivotI;
-                for (var j = pivotJ; j < pivotJ + blockView.ColumnCount; j++)
+                for (var j = pivotJ; j < pivotJ + columnCount; j++)
                 {
                     topEdgeIndexes.Add(new List<int> {i, j});
                 }
                 
+                var goOutside = true;
                 var minI = _boardTop - 1;
                 foreach (var topEdgeIndex in topEdgeIndexes)
                 {
                     for (var k = topEdgeIndex[0] - 1; k >= _boardTop; k--)
                     {
                         var cell = _board[k, topEdgeIndex[1]]; 
-                        if (cell != -1 && cell != id)
+                        if (cell != -1)
                         {
                             if (minI < k)
                             {
                                 minI = k;
                             }
+                            
+                            goOutside = false;
                             
                             break;
                         }
@@ -308,29 +336,35 @@ namespace Main.Scripts
                 
                 targetI = minI + 1;
                 targetJ = pivotJ;
+                
+                outsideI = !goOutside ? targetI : _boardTop - rowCount;
+                outsideJ = targetJ;
             }
             else if (direction == Direction.Right)
             {
                 var rightEdgeIndexes = new List<List<int>>();
                 
-                var j = pivotJ + blockView.ColumnCount - 1;
-                for (var i = pivotI; i < pivotI + blockView.RowCount; i++)
+                var j = pivotJ + columnCount - 1;
+                for (var i = pivotI; i < pivotI + rowCount; i++)
                 {
                     rightEdgeIndexes.Add(new List<int> {i, j});
                 }
                 
+                var goOutside = true;
                 var maxJ = _boardRight + 1;
                 foreach (var rightEdgeIndex in rightEdgeIndexes)
                 {
                     for (var l = rightEdgeIndex[1] + 1; l <= _boardRight; l++)
                     {
                         var cell = _board[rightEdgeIndex[0], l]; 
-                        if (cell != -1 && cell != id)
+                        if (cell != -1)
                         {
                             if (maxJ > l)
                             {
                                 maxJ = l;
                             }
+                            
+                            goOutside = false;
                             
                             break;
                         }
@@ -338,30 +372,36 @@ namespace Main.Scripts
                 }
                 
                 targetI = pivotI;
-                targetJ = maxJ - blockView.ColumnCount;
+                targetJ = maxJ - columnCount;
+                
+                outsideI = targetI;
+                outsideJ = !goOutside ? targetJ : _boardRight + 1;
             }
             else if (direction == Direction.Left)
             {
                 var leftEdgeIndexes = new List<List<int>>();
                 
                 var j = pivotJ;
-                for (var i = pivotI; i < pivotI + blockView.RowCount; i++)
+                for (var i = pivotI; i < pivotI + rowCount; i++)
                 {
                     leftEdgeIndexes.Add(new List<int> {i, j});
                 }
                 
+                var goOutside = true;
                 var minJ = _boardLeft - 1;
                 foreach (var leftEdgeIndex in leftEdgeIndexes)
                 {
                     for (var l = leftEdgeIndex[1] - 1; l >= _boardLeft; l--)
                     {
                         var cell = _board[leftEdgeIndex[0], l]; 
-                        if (cell != -1 && cell != id)
+                        if (cell != -1)
                         {
                             if (minJ < l)
                             {
                                 minJ = l;
                             }
+                            
+                            goOutside = false;
                             
                             break;
                         }
@@ -370,12 +410,12 @@ namespace Main.Scripts
                 
                 targetI = pivotI;
                 targetJ = minJ + 1;
+                
+                outsideI = targetI;
+                outsideJ = !goOutside ? targetJ : _boardLeft - columnCount;
             }
             
-            RemoveBlockFromBoard(blockView.ID);
-            PlaceBlockToBoard(blockView.ID, targetI, targetJ);
-            
-            return GetPosition(targetI, targetJ);
+            return (targetI, targetJ);
         }
         
         private void OnDrawGizmos()

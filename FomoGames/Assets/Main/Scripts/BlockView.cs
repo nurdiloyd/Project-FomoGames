@@ -37,13 +37,6 @@ namespace Main.Scripts
             return _direction == direction || _direction == direction.GetInverse();
         }
         
-        public void Move(Direction direction)
-        {
-            var toPosition = _gameBoard.GetTargetPosition(ID, direction);
-            
-            transform.DOMove(toPosition, 0.1f).SetEase(Ease.Linear);
-        }
-        
         public void Select()
         {
             meshRenderer.material.color = Color.red;
