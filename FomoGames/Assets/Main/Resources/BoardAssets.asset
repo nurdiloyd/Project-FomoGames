@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce65d15b4432f4317bad3dae1bd33ff9, type: 3}
+  m_Name: BoardAssets
+  m_EditorClassIdentifier: 
+  gatePrefab: {fileID: 5678917984507737719, guid: 25c623d57c4714f69a247f5a059d545a, type: 3}
+  block1Prefab: {fileID: -9170999731797745824, guid: 07e58df38b127449a9675a8df745ec24, type: 3}
+  block2Prefab: {fileID: -9051925752601077069, guid: 26e1b4dad82164b278e541f451aaf28d, type: 3}
+  block1TextureBlueParallel: {fileID: 2800000, guid: ff0bd83b4f9b0440aa832564c9a33f54, type: 3}
+  block1TextureBlueUp: {fileID: 2800000, guid: a447f05ddd2cb4d0c88edec82c5e11e2, type: 3}
+  block1TextureGreenParallel: {fileID: 2800000, guid: 1335aed1152b34f30b23083cb459c96a, type: 3}
+  block1TextureGreenUp: {fileID: 2800000, guid: 372f2f1e9dbbe44a2a5ad51387e0e39e, type: 3}
+  block1TexturePurpleParallel: {fileID: 2800000, guid: 35918ee5f888d46cf91f321e7e8d70c4, type: 3}
+  block1TexturePurpleUp: {fileID: 2800000, guid: 44caaad2ac34a428ebaeebc0b739ad63, type: 3}
+  block1TextureRedParallel: {fileID: 2800000, guid: 2ae4ea126e69f4f40ad5353021449a72, type: 3}
+  block1TextureRedUp: {fileID: 2800000, guid: cb66f998dd1014d658ca7e1fcfa2baa5, type: 3}
+  block1TextureYellowParallel: {fileID: 2800000, guid: 41e1935562e8c4a4980d879d5910275f, type: 3}
+  block1TextureYellowUp: {fileID: 2800000, guid: 9ab38370a950a4ad7a80383df11ff531, type: 3}
+  block2TextureBlueParallel: {fileID: 2800000, guid: 991813ad027f84de08fc89322996400d, type: 3}
+  block2TextureBlueUp: {fileID: 2800000, guid: da8561f6c4ef8410f96fab49afb69860, type: 3}
+  block2TextureGreenParallel: {fileID: 2800000, guid: 37b8c70b7e9064e07bce2552f3745a2b, type: 3}
+  block2TextureGreenUp: {fileID: 2800000, guid: 29a30479316464f33b45ada9f169a2ce, type: 3}
+  block2TexturePurpleParallel: {fileID: 2800000, guid: 3f938f379abaf47fea31c1edca0e0696, type: 3}
+  block2TexturePurpleUp: {fileID: 2800000, guid: f0f4824a86b154eaf88f1cb92661bb1d, type: 3}
+  block2TextureRedParallel: {fileID: 2800000, guid: 83c107dcec7cf46f8a086de25eaf85a9, type: 3}
+  block2TextureRedUp: {fileID: 2800000, guid: aaaa744694d7a48ac905f141f3db8f7c, type: 3}
+  block2TextureYellowParallel: {fileID: 2800000, guid: 910ccf601c630457bab3cf72f57cef7f, type: 3}
+  block2TextureYellowUp: {fileID: 2800000, guid: e3c23cac4d3f843fe9651aee90a33516, type: 3}
+  colorBlue: {r: 0, g: 0.11240196, b: 1, a: 1}
+  colorGreen: {r: 0.3050177, g: 1, b: 0, a: 1}
+  colorPurple: {r: 0.52386856, g: 0, b: 1, a: 1}
+  colorRed: {r: 1, g: 0, b: 0, a: 1}
+  colorYellow: {r: 1, g: 0.82046974, b: 0, a: 1}

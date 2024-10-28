@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Main.Scripts
 {
-    public class DataManager
+    public class DataManager : IContextUnit
     {
         private static readonly string PersistentPath = Application.persistentDataPath;
         private static readonly string LevelsPath = Path.Combine(PersistentPath, "Levels");

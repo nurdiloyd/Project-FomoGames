@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Main.Scripts
@@ -6,10 +7,13 @@ namespace Main.Scripts
     {
         public static GameController Instance { get; private set; }
         
+        [SerializeField] private Camera mainCamera;
+        
         public DataManager DataManager;
         public GameInputController GameInputController;
-        public BoardManager boardManager;
-        public CameraManager cameraManager;
+        public BoardManager BoardManager;
+        public CameraManager CameraManager;
+        private List<IContextUnit> _contexts;
         
         private void Awake()
         {
@@ -17,11 +21,18 @@ namespace Main.Scripts
             
             DataManager = new DataManager();
             GameInputController = new GameInputController();
+            BoardManager = new BoardManager();
+            CameraManager = new CameraManager();
             
             DataManager.Bind();
-            boardManager.Bind();
-            cameraManager.Bind();
+            BoardManager.Bind();
+            CameraManager.Bind();
             GameInputController.Bind();
+        }
+        
+        private void Start()
+        {
+            CameraManager.SetCamera(mainCamera);
         }
         
         private void Update()

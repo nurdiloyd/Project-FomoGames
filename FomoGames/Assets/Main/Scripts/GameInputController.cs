@@ -2,7 +2,7 @@
 
 namespace Main.Scripts
 {
-    public class GameInputController
+    public class GameInputController : IContextBehaviour
     {
         private Vector3 _startPosition;
         private Vector3 _endPosition;
@@ -15,8 +15,8 @@ namespace Main.Scripts
         
         public void Bind()
         {
-            _cameraManager = GameController.Instance.cameraManager;
-            _boardManager = GameController.Instance.boardManager;
+            _cameraManager = GameController.Instance.CameraManager;
+            _boardManager = GameController.Instance.BoardManager;
         }
         
         public void ManualUpdate()
