@@ -29,6 +29,10 @@ namespace Main.Scripts
             var seq = DOTween.Sequence();
             seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutBack));
             seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.InBack));
+            if (goOutside)
+            {
+                seq.AppendCallback(() => gameBoard.DestroyBlock(id));
+            }
             
             gameBoard.RemoveBlock(blockView.ID);
             if (!goOutside)

@@ -96,7 +96,7 @@ namespace Main.Scripts
         
         public void PlaceBlock(int id, int pivotI, int pivotJ)
         {
-            var blockView = _blocks[id];
+            var blockView = GetBlock(id);
             var rowCount = blockView.RowCount;
             var columnCount = blockView.ColumnCount;
             blockView.SetPivot(pivotI, pivotJ);
@@ -106,7 +106,7 @@ namespace Main.Scripts
         
         public void RemoveBlock(int id)
         {
-            var blockView = _blocks[id];
+            var blockView = GetBlock(id);
             var rowCount = blockView.RowCount;
             var columnCount = blockView.ColumnCount;
             var pivotI = blockView.PivotI;
@@ -182,19 +182,17 @@ namespace Main.Scripts
             
             if (blockDirection == BlockDirection.Down)
             {
-                var i = pivotI + rowCount - 1;
                 var j = pivotJ;
-                
                 var noBlock = true;
                 var maxI = _boardBottom + 1;
-                for (var k = i + 1; k <= _boardBottom; k++)
+                for (var i = pivotI + rowCount; i <= _boardBottom; i++)
                 {
-                    var cell = _board[k, j];
+                    var cell = _board[i, j];
                     if (cell.BlockID != NoBlock)
                     {
-                        if (maxI > k)
+                        if (maxI > i)
                         {
-                            maxI = k;
+                            maxI = i;
                         }
                         
                         noBlock = false;
@@ -212,37 +210,27 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[_boardBottom, targetJ].Gates;
-                    if (gates != null)
+                    if (CanExit(gates))
                     {
-                        for (var m = 0; m < gates.Count; m++)
-                        {
-                            var gate = gates[m];
-                            if (gate.Color == blockColor && gate.Direction == blockDirection)
-                            {
-                                outsideI = _boardBottom + 1;
-                                outsideJ = targetJ;
-                                goOutside = true;
-                                break;
-                            }
-                        }
+                        outsideI = _boardBottom + 1;
+                        outsideJ = targetJ;
+                        goOutside = true;
                     }
                 }
             }
             else if (blockDirection == BlockDirection.Up)
             {
-                var i = pivotI;
                 var j = pivotJ;
-                
                 var noBlock = true;
                 var minI = _boardTop - 1;
-                for (var k = i - 1; k >= _boardTop; k--)
+                for (var i = pivotI - 1; i >= _boardTop; i--)
                 {
-                    var cell = _board[k, j]; 
+                    var cell = _board[i, j]; 
                     if (cell.BlockID != NoBlock)
                     {
-                        if (minI < k)
+                        if (minI < i)
                         {
-                            minI = k;
+                            minI = i;
                         }
                         
                         noBlock = false;
@@ -260,37 +248,27 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[_boardTop, targetJ].Gates;
-                    if (gates != null)
+                    if (CanExit(gates))
                     {
-                        for (var m = 0; m < gates.Count; m++)
-                        {
-                            var gate = gates[m];
-                            if (gate.Color == blockColor && gate.Direction == blockDirection)
-                            {
-                                outsideI = _boardTop - rowCount;
-                                outsideJ = targetJ;
-                                goOutside = true;
-                                break;
-                            }
-                        }
+                        outsideI = _boardTop - rowCount;
+                        outsideJ = targetJ;
+                        goOutside = true;
                     }
                 }
             }
             else if (blockDirection == BlockDirection.Right)
             {
                 var i = pivotI;
-                var j = pivotJ + columnCount - 1;
-                
                 var noBlock = true;
                 var maxJ = _boardRight + 1;
-                for (var l = j + 1; l <= _boardRight; l++)
+                for (var j = pivotJ + columnCount; j <= _boardRight; j++)
                 {
-                    var cell = _board[i, l]; 
+                    var cell = _board[i, j]; 
                     if (cell.BlockID != NoBlock)
                     {
-                        if (maxJ > l)
+                        if (maxJ > j)
                         {
-                            maxJ = l;
+                            maxJ = j;
                         }
                         
                         noBlock = false;
@@ -308,37 +286,27 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[targetI, _boardRight].Gates;
-                    if (gates != null)
+                    if (CanExit(gates))
                     {
-                        for (var m = 0; m < gates.Count; m++)
-                        {
-                            var gate = gates[m];
-                            if (gate.Color == blockColor && gate.Direction == blockDirection)
-                            {
-                                outsideI = targetI;
-                                outsideJ = _boardRight + 1;
-                                goOutside = true;
-                                break;
-                            }
-                        }
+                        outsideI = targetI;
+                        outsideJ = _boardRight + 1;
+                        goOutside = true;
                     }
                 }
             }
             else if (blockDirection == BlockDirection.Left)
             {
                 var i = pivotI;
-                var j = pivotJ;
-                
                 var noBlock = true;
                 var minJ = _boardLeft - 1;
-                for (var l = j - 1; l >= _boardLeft; l--)
+                for (var j = pivotJ - 1; j >= _boardLeft; j--)
                 {
-                    var cell = _board[i, l]; 
+                    var cell = _board[i, j]; 
                     if (cell.BlockID != NoBlock)
                     {
-                        if (minJ < l)
+                        if (minJ < j)
                         {
-                            minJ = l;
+                            minJ = j;
                         }
                         
                         noBlock = false;
@@ -356,24 +324,40 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[targetI, _boardLeft].Gates;
-                    if (gates != null)
+                    if (CanExit(gates))
                     {
-                        for (var m = 0; m < gates.Count; m++)
-                        {
-                            var gate = gates[m];
-                            if (gate.Color == blockColor && gate.Direction == blockDirection)
-                            {
-                                outsideI = targetI;
-                                outsideJ = _boardLeft - columnCount;
-                                goOutside = true;
-                                break;
-                            }
-                        }
+                        outsideI = targetI;
+                        outsideJ = _boardLeft - columnCount;
+                        goOutside = true;
                     }
                 }
             }
             
             return (targetI, targetJ);
+            
+            bool CanExit(List<Gate> gates)
+            {
+                if (gates != null)
+                {
+                    for (var m = 0; m < gates.Count; m++)
+                    {
+                        var gate = gates[m];
+                        if (gate.Color == blockColor && gate.Direction == blockDirection)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                
+                return false;
+            }
+        }
+        
+        public void DestroyBlock(int id)
+        {
+            var blockView = GetBlock(id);
+            _blocks.Remove(id);
+            Destroy(blockView.gameObject);
         }
         
         public Texture GetBlockTexture(int length, BlockColor color, bool isParallel)
