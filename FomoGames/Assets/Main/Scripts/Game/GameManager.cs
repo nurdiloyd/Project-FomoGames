@@ -1,13 +1,16 @@
 using System;
 using DG.Tweening;
+using Main.Scripts.Game;
 using UnityEngine;
 
 namespace Main.Scripts
 {
-    public class BoardManager : IContextUnit
+    public class GameManager : IContextUnit
     {
-        private GameBoard _gameBoard;
         public BoardAssets BoardAssets { get; private set; }
+        private GameUI _gameUI;
+        private GameBoard _gameBoard;
+        private int _moveCount;
         
         public void Bind()
         {
@@ -15,6 +18,14 @@ namespace Main.Scripts
             var levelData = GameController.Instance.DataManager.GetCurrentLevelData();
             _gameBoard = new GameBoard();
             _gameBoard.Init(levelData);
+            _moveCount = levelData.MoveLimit;
+        }
+        
+        public void SetGameUI(GameUI gameUI)
+        {
+            _gameUI = gameUI;
+            _gameUI.SetLevelText(GameController.Instance.DataManager.CurrentLevelIndex + 1);
+            _gameUI.SetMoveCountText(_moveCount);
         }
         
         public void MoveBlock(int id, BlockDirection moveDirection)
@@ -42,6 +53,9 @@ namespace Main.Scripts
             {
                 _gameBoard.PlaceBlock(blockView.ID, targetI, targetJ);
             }
+            
+            _moveCount -= 1;
+            _gameUI.SetMoveCountText(_moveCount);
         }
     }
 }

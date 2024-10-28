@@ -8,7 +8,7 @@ namespace Main.Scripts
         public const float CellWidth = 1;
         private const int NoBlock = -1;
         
-        private BoardManager _boardManager;
+        private GameManager _gameManager;
         private Cell[,] _board;
         private readonly Dictionary<int, BlockView> _blocks = new();
         private Vector3 _initialPosition;
@@ -22,7 +22,7 @@ namespace Main.Scripts
         
         public void Init(LevelData levelData)
         {
-            _boardManager = GameController.Instance.BoardManager;
+            _gameManager = GameController.Instance.GameManager;
             _boardParent = new GameObject("Board").transform;
             
             _rowCount = levelData.RowCount;
@@ -59,7 +59,7 @@ namespace Main.Scripts
                 var color = movableInfo.Colors.ToBlockColor();
                 var position = GetCellPosition(i, j);
                 var rotation = Quaternion.Euler(0f, 90f * ((direction + 1) % 2), 0f);
-                var blockPrefab = _boardManager.BoardAssets.GetBlockPrefab(length);
+                var blockPrefab = _gameManager.BoardAssets.GetBlockPrefab(length);
                 
                 var blockView = Object.Instantiate(blockPrefab, position, rotation, _boardParent);
                 blockView.Init(index, length, direction.ToBlockDirection(), color);
@@ -118,7 +118,7 @@ namespace Main.Scripts
                 var position = GetCellPosition(i + iOffset, j + jOffset);
                 var rotation = Quaternion.Euler(0f, 90f * direction, 0f);
                 var gateColor = exitInfo.Colors.ToBlockColor();
-                var gatePrefab = _boardManager.BoardAssets.GetGatePrefab();
+                var gatePrefab = _gameManager.BoardAssets.GetGatePrefab();
                 
                 var gateView = Object.Instantiate(gatePrefab, position, rotation, _boardParent);
                 gateView.Init(direction.ToBlockDirection(), gateColor);

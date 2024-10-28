@@ -10,7 +10,7 @@ namespace Main.Scripts
         private static readonly string LevelsPath = Path.Combine(PersistentPath, "Levels");
         
         private LevelData[] _levelData;
-        private int _currentLevelIndex = 3;
+        public int CurrentLevelIndex { get; private set; }
         
         public void Bind()
         {
@@ -52,11 +52,13 @@ namespace Main.Scripts
                 var levelData = JsonUtility.FromJson<LevelData>(jsonFile);
                 _levelData[i] = levelData;
             }
+            
+            CurrentLevelIndex = 3;
         }
         
         public LevelData GetCurrentLevelData()
         {
-            return _levelData[_currentLevelIndex];
+            return _levelData[CurrentLevelIndex];
         }
     }
     

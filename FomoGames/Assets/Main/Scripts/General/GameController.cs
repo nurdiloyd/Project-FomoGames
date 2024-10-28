@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Main.Scripts.Game;
 using UnityEngine;
 
 namespace Main.Scripts
@@ -8,10 +9,11 @@ namespace Main.Scripts
         public static GameController Instance { get; private set; }
         
         [SerializeField] private Camera mainCamera;
+        [SerializeField] private GameUI gameUI;
         
         public DataManager DataManager;
         public GameInputController GameInputController;
-        public BoardManager BoardManager;
+        public GameManager GameManager;
         public CameraManager CameraManager;
         private List<IContextUnit> _contexts;
         
@@ -21,11 +23,11 @@ namespace Main.Scripts
             
             DataManager = new DataManager();
             GameInputController = new GameInputController();
-            BoardManager = new BoardManager();
+            GameManager = new GameManager();
             CameraManager = new CameraManager();
             
             DataManager.Bind();
-            BoardManager.Bind();
+            GameManager.Bind();
             CameraManager.Bind();
             GameInputController.Bind();
         }
@@ -33,6 +35,7 @@ namespace Main.Scripts
         private void Start()
         {
             CameraManager.SetCamera(mainCamera);
+            GameManager.SetGameUI(gameUI);
         }
         
         private void Update()

@@ -6,7 +6,7 @@ namespace Main.Scripts
     {
         private Vector3 _startPosition;
         private Vector3 _endPosition;
-        private BoardManager _boardManager;
+        private GameManager _gameManager;
         private BlockView _blockView;
         private bool _blockSelected;
         private const float SwipeLengthThreshold = 0.25f;
@@ -16,7 +16,7 @@ namespace Main.Scripts
         public void Bind()
         {
             _cameraManager = GameController.Instance.CameraManager;
-            _boardManager = GameController.Instance.BoardManager;
+            _gameManager = GameController.Instance.GameManager;
         }
         
         public void ManualUpdate()
@@ -61,7 +61,7 @@ namespace Main.Scripts
                     if (canMove)
                     {
                         _blockSelected = false;
-                        _boardManager.MoveBlock(_blockView.ID, moveDirection);
+                        _gameManager.MoveBlock(_blockView.ID, moveDirection);
                         _blockView.Deselect();
                         _blockView = null;
                     }

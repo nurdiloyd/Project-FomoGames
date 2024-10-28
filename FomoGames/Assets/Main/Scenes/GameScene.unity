@@ -511,7 +511,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 30, y: -30}
-  m_SizeDelta: {x: 270, y: 50}
+  m_SizeDelta: {x: 270, y: 80}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &832575517
 GameObject:
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Move 99
+  m_text: Move 15
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4f04e48a75b9c4d278d681e832b4bb99, type: 2}
   m_sharedMaterial: {fileID: -135005816920703701, guid: 4f04e48a75b9c4d278d681e832b4bb99, type: 2}
@@ -814,7 +814,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -30, y: -30}
-  m_SizeDelta: {x: 270, y: 50}
+  m_SizeDelta: {x: 270, y: 80}
   m_Pivot: {x: 1, y: 1}
 --- !u!1 &1827333830
 GameObject:
@@ -846,6 +846,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 330585545}
+  gameUI: {fileID: 1123075280}
 --- !u!4 &1827333832
 Transform:
   m_ObjectHideFlags: 0

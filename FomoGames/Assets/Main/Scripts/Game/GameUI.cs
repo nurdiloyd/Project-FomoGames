@@ -10,12 +10,12 @@ namespace Main.Scripts.Game
         
         public void SetLevelText(int level)
         {
-            levelText.text = $"Level: {level}";
+            levelText.text = $"Level {level}";
         }
         
         public void SetMoveCountText(int moveCount)
         {
-            moveCountText.text = $"Moves: {moveCount}";
+            moveCountText.text = $"Move {moveCount}";
         }
     }
 }

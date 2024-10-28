@@ -21,8 +21,8 @@ namespace Main.Scripts
             RowCount = blockDirection.IsHorizontal() ? 1 : length;
             ColumnCount = blockDirection.IsVertical() ? 1 : length;
             BlockColor = color;
-            var boardManager = GameController.Instance.BoardManager;
-            meshRenderer.material.mainTexture = boardManager.BoardAssets.GetBlockTexture(length, BlockColor, _blockDirection.IsVertical());
+            var gameManager = GameController.Instance.GameManager;
+            meshRenderer.material.mainTexture = gameManager.BoardAssets.GetBlockTexture(length, BlockColor, _blockDirection.IsVertical());
         }
         
         public void SetPivot(int pivotI, int pivotJ)

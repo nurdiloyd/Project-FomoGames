@@ -16,7 +16,7 @@ namespace Main.Scripts
             
             foreach (var meshRenderer in meshRenderers)
             {
-                meshRenderer.material.color = GameController.Instance.BoardManager.BoardAssets.GetGateColor(GateColor);
+                meshRenderer.material.color = GameController.Instance.GameManager.BoardAssets.GetGateColor(GateColor);
             }
         }
     }
