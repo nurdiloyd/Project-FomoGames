@@ -8,6 +8,7 @@ namespace Main.Scripts
 {
     public class GameManager : IContextUnit
     {
+        public const int InfinityMove = 1000;
         public bool HasMove => _moveCount > 0;
         public BoardAssets BoardAssets { get; private set; }
         private GameUI _gameUI;
@@ -17,15 +18,20 @@ namespace Main.Scripts
         public void Bind()
         {
             BoardAssets = Resources.Load<BoardAssets>("BoardAssets");
-            var levelData = GameController.Instance.DataManager.GetCurrentLevelData();
             _gameBoard = new GameBoard();
-            _gameBoard.Init(levelData);
-            _moveCount = 3;//levelData.MoveLimit;
         }
         
         public void SetGameUI(GameUI gameUI)
         {
             _gameUI = gameUI;
+        }
+        
+        public void LoadLevel()
+        {
+            var levelData = GameController.Instance.DataManager.GetCurrentLevelData();
+            _gameBoard.Init(levelData);
+            _moveCount = levelData.MoveLimit == 0 ? InfinityMove : levelData.MoveLimit;
+            
             _gameUI.SetLevelText(GameController.Instance.DataManager.CurrentLevelIndex + 1);
             _gameUI.SetMoveCountText(_moveCount);
         }
@@ -84,16 +90,26 @@ namespace Main.Scripts
         
         private void DecreaseMoveCount()
         {
+            if (_moveCount == InfinityMove)
+            {
+                return;
+            }
+            
             _moveCount -= 1;
             _gameUI.SetMoveCountText(_moveCount);
         }
         
         public void TryAgain()
         {
+            _gameBoard.Clear();
+            LoadLevel();
         }
         
         public void NextLevel()
         {
+            GameController.Instance.DataManager.IncreaseCurrentLevelIndex();
+            _gameBoard.Clear();
+            LoadLevel();
         }
     }
 }

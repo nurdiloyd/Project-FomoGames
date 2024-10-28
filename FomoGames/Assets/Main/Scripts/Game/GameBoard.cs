@@ -331,6 +331,14 @@ namespace Main.Scripts
         {
             _blocks.Remove(id);
         }
+        
+        public void Clear()
+        {
+            Object.Destroy(_boardParent.gameObject);
+            _boardParent = null;
+            _blocks.Clear();
+            _board = null;
+        }
     }
     
     public class Cell

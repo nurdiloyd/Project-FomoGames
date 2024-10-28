@@ -7,6 +7,7 @@ namespace Main.Scripts.Game
     {
         [SerializeField] private TextMeshProUGUI levelText;
         [SerializeField] private TextMeshProUGUI moveCountText;
+        [SerializeField] private GameObject infinitySign;
         
         public void SetLevelText(int level)
         {
@@ -15,7 +16,16 @@ namespace Main.Scripts.Game
         
         public void SetMoveCountText(int moveCount)
         {
-            moveCountText.text = $"Move {moveCount}";
+            if (GameManager.InfinityMove == moveCount)
+            {
+                infinitySign.SetActive(true);
+                moveCountText.text = "Move";
+            }
+            else
+            {
+                infinitySign.SetActive(false);
+                moveCountText.text = $"Move {moveCount}";
+            }
         }
         
         public void ShowLevelWinDialog()

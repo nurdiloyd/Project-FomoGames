@@ -36,6 +36,13 @@ namespace Main.Scripts
         {
             CameraManager.SetCamera(mainCamera);
             GameManager.SetGameUI(gameUI);
+            
+            StartGame();
+        }
+
+        private void StartGame()
+        {
+            GameManager.LoadLevel();
         }
         
         private void Update()

@@ -9,13 +9,13 @@ namespace Main.Scripts
         private static readonly string PersistentPath = Application.persistentDataPath;
         private static readonly string LevelsPath = Path.Combine(PersistentPath, "Levels");
         
-        private LevelData[] _levelData;
         public int CurrentLevelIndex { get; private set; }
+        private int _totalLevelCount;
         
         public void Bind()
         {
             CopyLevelDataFromStreamingAssets();
-            LoadLevelData();
+            _totalLevelCount = Directory.GetFiles(LevelsPath, "*.json").Length;
         }
         
         private void CopyLevelDataFromStreamingAssets()
@@ -41,24 +41,17 @@ namespace Main.Scripts
             }
         }
         
-        private void LoadLevelData()
+        public void IncreaseCurrentLevelIndex()
         {
-            var levelFiles = Directory.GetFiles(LevelsPath, "*.json");
-            _levelData = new LevelData[levelFiles.Length];
-            
-            for (var i = 0; i < levelFiles.Length; i++)
-            {
-                var jsonFile = File.ReadAllText(levelFiles[i]);
-                var levelData = JsonUtility.FromJson<LevelData>(jsonFile);
-                _levelData[i] = levelData;
-            }
-            
-            CurrentLevelIndex = 3;
+            CurrentLevelIndex = (CurrentLevelIndex + 1) % _totalLevelCount;
         }
         
         public LevelData GetCurrentLevelData()
         {
-            return _levelData[CurrentLevelIndex];
+            var levelFiles = Directory.GetFiles(LevelsPath, "*.json");
+            var jsonFile = File.ReadAllText(levelFiles[CurrentLevelIndex]);
+            var levelData = JsonUtility.FromJson<LevelData>(jsonFile);
+            return levelData;
         }
     }
     
