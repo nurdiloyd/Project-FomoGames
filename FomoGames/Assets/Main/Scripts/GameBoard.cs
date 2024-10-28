@@ -267,32 +267,24 @@ namespace Main.Scripts
             
             if (direction == Direction.Down)
             {
-                var bottomEdgeIndexes = new List<List<int>>();
-                
                 var i = pivotI + rowCount - 1;
-                for (var j = pivotJ; j < pivotJ + columnCount; j++)
-                {
-                    bottomEdgeIndexes.Add(new List<int> {i, j});
-                }
+                var j = pivotJ;
                 
                 var goOutside = true;
                 var maxI = _boardBottom + 1;
-                foreach (var bottomEdgeIndex in bottomEdgeIndexes)
+                for (var k = i + 1; k <= _boardBottom; k++)
                 {
-                    for (var k = bottomEdgeIndex[0] + 1; k <= _boardBottom; k++)
+                    var cell = _board[k, j];
+                    if (cell.BlockID != NoBlock)
                     {
-                        var cell = _board[k, bottomEdgeIndex[1]];
-                        if (cell.BlockID != NoBlock)
+                        if (maxI > k)
                         {
-                            if (maxI > k)
-                            {
-                                maxI = k;
-                            }
-                            
-                            goOutside = false;
-                            
-                            break;
+                            maxI = k;
                         }
+                        
+                        goOutside = false;
+                        
+                        break;
                     }
                 }
                 
@@ -304,32 +296,24 @@ namespace Main.Scripts
             }
             else if (direction == Direction.Up)
             {
-                var topEdgeIndexes = new List<List<int>>();
-                
                 var i = pivotI;
-                for (var j = pivotJ; j < pivotJ + columnCount; j++)
-                {
-                    topEdgeIndexes.Add(new List<int> {i, j});
-                }
+                var j = pivotJ;
                 
                 var goOutside = true;
                 var minI = _boardTop - 1;
-                foreach (var topEdgeIndex in topEdgeIndexes)
+                for (var k = i - 1; k >= _boardTop; k--)
                 {
-                    for (var k = topEdgeIndex[0] - 1; k >= _boardTop; k--)
+                    var cell = _board[k, j]; 
+                    if (cell.BlockID != NoBlock)
                     {
-                        var cell = _board[k, topEdgeIndex[1]]; 
-                        if (cell.BlockID != NoBlock)
+                        if (minI < k)
                         {
-                            if (minI < k)
-                            {
-                                minI = k;
-                            }
-                            
-                            goOutside = false;
-                            
-                            break;
+                            minI = k;
                         }
+                        
+                        goOutside = false;
+                        
+                        break;
                     }
                 }
                 
@@ -341,32 +325,24 @@ namespace Main.Scripts
             }
             else if (direction == Direction.Right)
             {
-                var rightEdgeIndexes = new List<List<int>>();
-                
+                var i = pivotI;
                 var j = pivotJ + columnCount - 1;
-                for (var i = pivotI; i < pivotI + rowCount; i++)
-                {
-                    rightEdgeIndexes.Add(new List<int> {i, j});
-                }
                 
                 var goOutside = true;
                 var maxJ = _boardRight + 1;
-                foreach (var rightEdgeIndex in rightEdgeIndexes)
+                for (var l = j + 1; l <= _boardRight; l++)
                 {
-                    for (var l = rightEdgeIndex[1] + 1; l <= _boardRight; l++)
+                    var cell = _board[i, l]; 
+                    if (cell.BlockID != NoBlock)
                     {
-                        var cell = _board[rightEdgeIndex[0], l]; 
-                        if (cell.BlockID != NoBlock)
+                        if (maxJ > l)
                         {
-                            if (maxJ > l)
-                            {
-                                maxJ = l;
-                            }
-                            
-                            goOutside = false;
-                            
-                            break;
+                            maxJ = l;
                         }
+                        
+                        goOutside = false;
+                        
+                        break;
                     }
                 }
                 
@@ -378,32 +354,24 @@ namespace Main.Scripts
             }
             else if (direction == Direction.Left)
             {
-                var leftEdgeIndexes = new List<List<int>>();
-                
+                var i = pivotI;
                 var j = pivotJ;
-                for (var i = pivotI; i < pivotI + rowCount; i++)
-                {
-                    leftEdgeIndexes.Add(new List<int> {i, j});
-                }
                 
                 var goOutside = true;
                 var minJ = _boardLeft - 1;
-                foreach (var leftEdgeIndex in leftEdgeIndexes)
+                for (var l = j - 1; l >= _boardLeft; l--)
                 {
-                    for (var l = leftEdgeIndex[1] - 1; l >= _boardLeft; l--)
+                    var cell = _board[i, l]; 
+                    if (cell.BlockID != NoBlock)
                     {
-                        var cell = _board[leftEdgeIndex[0], l]; 
-                        if (cell.BlockID != NoBlock)
+                        if (minJ < l)
                         {
-                            if (minJ < l)
-                            {
-                                minJ = l;
-                            }
-                            
-                            goOutside = false;
-                            
-                            break;
+                            minJ = l;
                         }
+                        
+                        goOutside = false;
+                        
+                        break;
                     }
                 }
                 
