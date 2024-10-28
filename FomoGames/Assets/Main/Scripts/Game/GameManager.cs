@@ -42,8 +42,8 @@ namespace Main.Scripts
             var blockView = _gameBoard.GetBlock(id);
             var pivotI = blockView.PivotI;
             var pivotJ = blockView.PivotJ;
-            var (targetI, targetJ) = _gameBoard.GetTargetIndex(pivotI, pivotJ, blockView.RowCount, blockView.ColumnCount,
-                moveDirection, blockView.BlockColor, out var outsideI, out var outsideJ, out var goOutside);
+            var (targetI, targetJ) = _gameBoard.GetTargetIndex(id, moveDirection,
+                out var outsideI, out var outsideJ, out var goOutside, out var gateView);
             
             var isMoved = !(targetI == pivotI && targetJ == pivotJ);
             
@@ -73,6 +73,7 @@ namespace Main.Scripts
             
             if (goOutside)
             {
+                seq.JoinCallback(gateView.Open);
                 seq.AppendCallback(() => Object.Destroy(blockView.gameObject));
             }
             

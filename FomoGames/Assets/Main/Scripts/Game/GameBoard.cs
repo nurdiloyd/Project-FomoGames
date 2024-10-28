@@ -146,15 +146,24 @@ namespace Main.Scripts
             return _initialPosition + new Vector3(j, 0f, -i) * CellWidth;
         }
         
-        public (int i, int j) GetTargetIndex(int pivotI, int pivotJ, int rowCount, int columnCount, BlockDirection blockDirection, BlockColor blockColor, out int outsideI, out int outsideJ, out bool goOutside)
+        public (int i, int j) GetTargetIndex(int id, BlockDirection moveDirection, 
+            out int outsideI, out int outsideJ, out bool goOutside, out GateView gateView)
         {
+            var blockView = GetBlock(id);
+            var pivotI = blockView.PivotI;
+            var pivotJ = blockView.PivotJ;
+            var rowCount = blockView.RowCount;
+            var columnCount = blockView.ColumnCount;
+            var blockColor = blockView.BlockColor;
+            
             var targetI = pivotI;
             var targetJ = pivotJ;
             outsideI = targetI;
             outsideJ = targetJ;
             goOutside = false;
+            gateView = null;
             
-            if (blockDirection == BlockDirection.Down)
+            if (moveDirection == BlockDirection.Down)
             {
                 var j = pivotJ;
                 var noBlock = true;
@@ -184,7 +193,7 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[_boardBottom, targetJ].Gates;
-                    if (CanExit(gates))
+                    if (CanExit(gates, out gateView))
                     {
                         outsideI = _boardBottom + 1;
                         outsideJ = targetJ;
@@ -192,7 +201,7 @@ namespace Main.Scripts
                     }
                 }
             }
-            else if (blockDirection == BlockDirection.Up)
+            else if (moveDirection == BlockDirection.Up)
             {
                 var j = pivotJ;
                 var noBlock = true;
@@ -222,7 +231,7 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[_boardTop, targetJ].Gates;
-                    if (CanExit(gates))
+                    if (CanExit(gates, out gateView))
                     {
                         outsideI = _boardTop - rowCount;
                         outsideJ = targetJ;
@@ -230,7 +239,7 @@ namespace Main.Scripts
                     }
                 }
             }
-            else if (blockDirection == BlockDirection.Right)
+            else if (moveDirection == BlockDirection.Right)
             {
                 var i = pivotI;
                 var noBlock = true;
@@ -260,7 +269,7 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[targetI, _boardRight].Gates;
-                    if (CanExit(gates))
+                    if (CanExit(gates, out gateView))
                     {
                         outsideI = targetI;
                         outsideJ = _boardRight + 1;
@@ -268,7 +277,7 @@ namespace Main.Scripts
                     }
                 }
             }
-            else if (blockDirection == BlockDirection.Left)
+            else if (moveDirection == BlockDirection.Left)
             {
                 var i = pivotI;
                 var noBlock = true;
@@ -298,7 +307,7 @@ namespace Main.Scripts
                 if (noBlock)
                 {
                     var gates = _board[targetI, _boardLeft].Gates;
-                    if (CanExit(gates))
+                    if (CanExit(gates, out gateView))
                     {
                         outsideI = targetI;
                         outsideJ = _boardLeft - columnCount;
@@ -309,15 +318,17 @@ namespace Main.Scripts
             
             return (targetI, targetJ);
             
-            bool CanExit(List<GateView> gates)
+            bool CanExit(List<GateView> gates, out GateView gateView)
             {
+                gateView = null;
                 if (gates != null)
                 {
                     for (var m = 0; m < gates.Count; m++)
                     {
                         var gate = gates[m];
-                        if (gate.GateColor == blockColor && gate.GateDirection == blockDirection)
+                        if (gate.GateColor == blockColor && gate.GateDirection == moveDirection)
                         {
+                            gateView = gate;
                             return true;
                         }
                     }
