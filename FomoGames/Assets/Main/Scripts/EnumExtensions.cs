@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Main.Scripts
 {
     public static class EnumExtensions
@@ -47,6 +49,30 @@ namespace Main.Scripts
                 3 => BlockDirection.Left,
                 _ => BlockDirection.Up
             };
+        }
+        
+        public static BlockDirection ToBlockDirection(this Vector2 moveDirection)
+        {
+            if (moveDirection == Vector2.up)
+            {
+                return BlockDirection.Up;
+            }
+            else if (moveDirection == Vector2.right)
+            {
+                return BlockDirection.Right;
+            }
+            else if (moveDirection == Vector2.down)
+            {
+                return BlockDirection.Down;
+            }
+            else if (moveDirection == Vector2.left)
+            {
+                return BlockDirection.Left;
+            }
+            else
+            {
+                return BlockDirection.Up;
+            }
         }
     }
 }

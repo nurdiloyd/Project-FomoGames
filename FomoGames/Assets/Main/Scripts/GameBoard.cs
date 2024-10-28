@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using DG.Tweening;
 using UnityEngine;
-using Math = System.Math;
 
 namespace Main.Scripts
 {
@@ -92,11 +90,11 @@ namespace Main.Scripts
                 blockView.Init(this, index, length, direction.ToBlockDirection(), color);
                 _blocks.Add(blockView.ID, blockView);
                 
-                PlaceBlockToBoard(blockView.ID, i, j);
+                PlaceBlock(blockView.ID, i, j);
             }
         }
         
-        private void PlaceBlockToBoard(int id, int pivotI, int pivotJ)
+        public void PlaceBlock(int id, int pivotI, int pivotJ)
         {
             var blockView = _blocks[id];
             var rowCount = blockView.RowCount;
@@ -106,7 +104,7 @@ namespace Main.Scripts
             SetBoardCells(pivotI, pivotJ, rowCount, columnCount, id);
         }
         
-        private void RemoveBlockFromBoard(int id)
+        public void RemoveBlock(int id)
         {
             var blockView = _blocks[id];
             var rowCount = blockView.RowCount;
@@ -164,108 +162,17 @@ namespace Main.Scripts
             });
         }
         
-        public Color GetGateColor(BlockColor color)
+        public BlockView GetBlock(int id)
         {
-            return color switch
-            {
-                BlockColor.Red => colorRed,
-                BlockColor.Green => colorGreen,
-                BlockColor.Blue => colorBlue,
-                BlockColor.Yellow => colorYellow,
-                BlockColor.Purple => colorPurple,
-                _ => Color.white
-            };
+            return _blocks[id];
         }
         
-        private BlockView GetBlockPrefab(int length)
-        {
-            return length switch
-            {
-                1 => block1Prefab,
-                2 => block2Prefab,
-                _ => block1Prefab,
-            };
-        }
-        
-        public Texture GetBlockTexture(int length, BlockColor color, bool isParallel)
-        {
-            return length switch
-            {
-                1 => color switch
-                {
-                    BlockColor.Red => isParallel ? block1TextureRedParallel : block1TextureRedUp,
-                    BlockColor.Green => isParallel ? block1TextureGreenParallel : block1TextureGreenUp,
-                    BlockColor.Blue => isParallel ? block1TextureBlueParallel : block1TextureBlueUp,
-                    BlockColor.Yellow => isParallel ? block1TextureYellowParallel : block1TextureYellowUp,
-                    BlockColor.Purple => isParallel ? block1TexturePurpleParallel : block1TexturePurpleUp,
-                    _ => null
-                },
-                2 => color switch
-                {
-                    BlockColor.Red => isParallel ? block2TextureRedParallel : block2TextureRedUp,
-                    BlockColor.Green => isParallel ? block2TextureGreenParallel : block2TextureGreenUp,
-                    BlockColor.Blue => isParallel ? block2TextureBlueParallel : block2TextureBlueUp,
-                    BlockColor.Yellow => isParallel ? block2TextureYellowParallel : block2TextureYellowUp,
-                    BlockColor.Purple => isParallel ? block2TexturePurpleParallel : block2TexturePurpleUp,
-                    _ => null
-                },
-                _ => null
-            };
-        }
-        
-        private Vector3 GetCellPosition(int i, int j)
+        public Vector3 GetCellPosition(int i, int j)
         {
             return _initialPosition + new Vector3(j, 0f, -i) * CellWidth;
         }
         
-        public static BlockDirection DirectionVectorToEnum(Vector2 moveDirection)
-        {
-            if (moveDirection == Vector2.up)
-            {
-                return BlockDirection.Up;
-            }
-            else if (moveDirection == Vector2.right)
-            {
-                return BlockDirection.Right;
-            }
-            else if (moveDirection == Vector2.down)
-            {
-                return BlockDirection.Down;
-            }
-            else if (moveDirection == Vector2.left)
-            {
-                return BlockDirection.Left;
-            }
-            else
-            {
-                return BlockDirection.Up;
-            }
-        }
-        
-        public void MoveBlock(int id, BlockDirection moveBlockDirection)
-        {
-            var blockView = _blocks[id];
-            var pivotI = blockView.PivotI;
-            var pivotJ = blockView.PivotJ;
-            var (targetI, targetJ) = GetTargetIndex(pivotI, pivotJ, blockView.RowCount, blockView.ColumnCount,
-                moveBlockDirection, blockView.BlockColor, out var outsideI, out var outsideJ, out var goOutside);
-            var difference = Math.Max(Math.Abs(targetI - pivotI), Math.Abs(targetJ - pivotJ));
-            var duration = 0.1f * difference;
-            var targetPosition = GetCellPosition(targetI, targetJ);
-            var outsidePosition = GetCellPosition(outsideI, outsideJ);
-            
-            var seq = DOTween.Sequence();
-            seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutBack));
-            seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.InBack));
-            
-            RemoveBlockFromBoard(blockView.ID);
-            if (!goOutside)
-            {
-                PlaceBlockToBoard(blockView.ID, targetI, targetJ);
-            }
-        }
-        
-        private (int i, int j) GetTargetIndex(int pivotI, int pivotJ, int rowCount, int columnCount, BlockDirection blockDirection, BlockColor blockColor, out int outsideI, out int outsideJ, out bool goOutside)
+        public (int i, int j) GetTargetIndex(int pivotI, int pivotJ, int rowCount, int columnCount, BlockDirection blockDirection, BlockColor blockColor, out int outsideI, out int outsideJ, out bool goOutside)
         {
             var targetI = pivotI;
             var targetJ = pivotJ;
@@ -467,6 +374,55 @@ namespace Main.Scripts
             }
             
             return (targetI, targetJ);
+        }
+        
+        public Texture GetBlockTexture(int length, BlockColor color, bool isParallel)
+        {
+            return length switch
+            {
+                1 => color switch
+                {
+                    BlockColor.Red => isParallel ? block1TextureRedParallel : block1TextureRedUp,
+                    BlockColor.Green => isParallel ? block1TextureGreenParallel : block1TextureGreenUp,
+                    BlockColor.Blue => isParallel ? block1TextureBlueParallel : block1TextureBlueUp,
+                    BlockColor.Yellow => isParallel ? block1TextureYellowParallel : block1TextureYellowUp,
+                    BlockColor.Purple => isParallel ? block1TexturePurpleParallel : block1TexturePurpleUp,
+                    _ => null
+                },
+                2 => color switch
+                {
+                    BlockColor.Red => isParallel ? block2TextureRedParallel : block2TextureRedUp,
+                    BlockColor.Green => isParallel ? block2TextureGreenParallel : block2TextureGreenUp,
+                    BlockColor.Blue => isParallel ? block2TextureBlueParallel : block2TextureBlueUp,
+                    BlockColor.Yellow => isParallel ? block2TextureYellowParallel : block2TextureYellowUp,
+                    BlockColor.Purple => isParallel ? block2TexturePurpleParallel : block2TexturePurpleUp,
+                    _ => null
+                },
+                _ => null
+            };
+        }
+        
+        public Color GetGateColor(BlockColor color)
+        {
+            return color switch
+            {
+                BlockColor.Red => colorRed,
+                BlockColor.Green => colorGreen,
+                BlockColor.Blue => colorBlue,
+                BlockColor.Yellow => colorYellow,
+                BlockColor.Purple => colorPurple,
+                _ => Color.white
+            };
+        }
+        
+        private BlockView GetBlockPrefab(int length)
+        {
+            return length switch
+            {
+                1 => block1Prefab,
+                2 => block2Prefab,
+                _ => block1Prefab,
+            };
         }
         
         private void OnDrawGizmos()

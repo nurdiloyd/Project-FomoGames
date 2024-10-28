@@ -6,7 +6,7 @@ namespace Main.Scripts
     {
         private Vector3 _startPosition;
         private Vector3 _endPosition;
-        private GameBoard _gameBoard;
+        private BoardManager _boardManager;
         private BlockView _blockView;
         private bool _blockSelected;
         private const float SwipeLengthThreshold = 0.25f;
@@ -16,7 +16,7 @@ namespace Main.Scripts
         public void Bind()
         {
             _cameraManager = GameController.Instance.cameraManager;
-            _gameBoard = GameController.Instance.boardManager.gameBoard;
+            _boardManager = GameController.Instance.boardManager;
         }
         
         public void ManualUpdate()
@@ -42,7 +42,7 @@ namespace Main.Scripts
                 var toward = _endPosition - _startPosition;
                 var rad = (int)Mathf.Round(Vector2.SignedAngle(Vector2.right, toward) / 90f);
                 var direction = new Vector2((1 - Mathf.Abs(rad)) % 2, rad % 2);
-                var moveDirection = GameBoard.DirectionVectorToEnum(direction);
+                var moveDirection = direction.ToBlockDirection();
                 
                 if (_blockView.CanMoveOnAxis(moveDirection))
                 {
@@ -61,7 +61,7 @@ namespace Main.Scripts
                     if (canMove)
                     {
                         _blockSelected = false;
-                        _gameBoard.MoveBlock(_blockView.ID, moveDirection);
+                        _boardManager.MoveBlock(_blockView.ID, moveDirection);
                         _blockView.Deselect();
                         _blockView = null;
                     }
