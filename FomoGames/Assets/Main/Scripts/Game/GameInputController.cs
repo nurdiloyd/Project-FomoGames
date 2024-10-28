@@ -21,6 +21,11 @@ namespace Main.Scripts
         
         public void ManualUpdate()
         {
+            if (!_gameManager.HasMove)
+            {
+                return;
+            }
+            
             if (Input.GetMouseButtonDown(0))
             {
                 _startPosition = Input.mousePosition;

@@ -5,6 +5,8 @@ namespace Main.Scripts
 {
     public class GameBoard
     {
+        public bool IsThereAnyBlock => _blocks.Count > 0;
+        
         public const float CellWidth = 1;
         private const int NoBlock = -1;
         
@@ -325,11 +327,9 @@ namespace Main.Scripts
             }
         }
         
-        public void DestroyBlock(int id)
+        public void ExitBlock(int id)
         {
-            var blockView = GetBlock(id);
             _blocks.Remove(id);
-            Object.Destroy(blockView.gameObject);
         }
     }
     

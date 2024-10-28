@@ -2,11 +2,13 @@ using System;
 using DG.Tweening;
 using Main.Scripts.Game;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Main.Scripts
 {
     public class GameManager : IContextUnit
     {
+        public bool HasMove => _moveCount > 0;
         public BoardAssets BoardAssets { get; private set; }
         private GameUI _gameUI;
         private GameBoard _gameBoard;
@@ -18,7 +20,7 @@ namespace Main.Scripts
             var levelData = GameController.Instance.DataManager.GetCurrentLevelData();
             _gameBoard = new GameBoard();
             _gameBoard.Init(levelData);
-            _moveCount = levelData.MoveLimit;
+            _moveCount = 3;//levelData.MoveLimit;
         }
         
         public void SetGameUI(GameUI gameUI)
@@ -35,6 +37,24 @@ namespace Main.Scripts
             var pivotJ = blockView.PivotJ;
             var (targetI, targetJ) = _gameBoard.GetTargetIndex(pivotI, pivotJ, blockView.RowCount, blockView.ColumnCount,
                 moveDirection, blockView.BlockColor, out var outsideI, out var outsideJ, out var goOutside);
+            
+            var isMoved = !(targetI == pivotI && targetJ == pivotJ);
+            
+            _gameBoard.RemoveBlock(blockView.ID);
+            if (goOutside)
+            {
+                _gameBoard.ExitBlock(blockView.ID);
+            }
+            else
+            {
+                _gameBoard.PlaceBlock(blockView.ID, targetI, targetJ);
+            }
+            
+            if (isMoved)
+            {
+                DecreaseMoveCount();
+            }
+            
             var difference = Math.Max(Math.Abs(targetI - pivotI), Math.Abs(targetJ - pivotJ));
             var duration = 0.1f * difference;
             var targetPosition = _gameBoard.GetCellPosition(targetI, targetJ);
@@ -45,17 +65,35 @@ namespace Main.Scripts
             seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.InBack));
             if (goOutside)
             {
-                seq.AppendCallback(() => _gameBoard.DestroyBlock(id));
+                seq.AppendCallback(() => Object.Destroy(blockView.gameObject));
             }
-            
-            _gameBoard.RemoveBlock(blockView.ID);
-            if (!goOutside)
+            seq.AppendCallback(CheckEndOfGame);
+        }
+        
+        private void CheckEndOfGame()
+        {
+            if (!_gameBoard.IsThereAnyBlock)
             {
-                _gameBoard.PlaceBlock(blockView.ID, targetI, targetJ);
+                _gameUI.ShowLevelWinDialog();
             }
-            
+            else if (!HasMove)
+            {
+                _gameUI.ShowLevelLoseDialog();
+            }
+        }
+        
+        private void DecreaseMoveCount()
+        {
             _moveCount -= 1;
             _gameUI.SetMoveCountText(_moveCount);
+        }
+        
+        public void TryAgain()
+        {
+        }
+        
+        public void NextLevel()
+        {
         }
     }
 }

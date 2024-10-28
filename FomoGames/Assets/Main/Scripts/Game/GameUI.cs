@@ -17,5 +17,17 @@ namespace Main.Scripts.Game
         {
             moveCountText.text = $"Move {moveCount}";
         }
+        
+        public void ShowLevelWinDialog()
+        {
+            var dialogPrefab = Resources.Load<GameObject>("LevelWinDialogPrefab");
+            Instantiate(dialogPrefab, transform);
+        }
+        
+        public void ShowLevelLoseDialog()
+        {
+            var dialogPrefab = Resources.Load<GameObject>("LevelLoseDialogPrefab");
+            Instantiate(dialogPrefab, transform);
+        }
     }
 }
