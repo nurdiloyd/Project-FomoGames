@@ -14,6 +14,7 @@ namespace Main.Scripts
         [SerializeField] private Color colorYellow;
         
         public const float CellWidth = 1;
+        private const int NoBlock = -1;
         
         public GameObject gatePrefab;
         public BlockView block1Prefab;
@@ -39,7 +40,7 @@ namespace Main.Scripts
         public Texture2D block2TextureYellowParallel;
         public Texture2D block2TextureYellowUp;
         
-        private int[,] _board;
+        private Cell[,] _board;
         private readonly Dictionary<int, BlockView> _blocks = new();
         private Vector3 _initialPosition;
         private int _boardTop;
@@ -60,7 +61,7 @@ namespace Main.Scripts
             _boardLeft = 0;
             
             _initialPosition = new Vector3((1 - _columnCount) / 2f, 0f, -(1 - _rowCount) / 2f) * CellWidth;
-            _board = new int[_rowCount, _columnCount];
+            _board = new Cell[_rowCount, _columnCount];
             
             PlaceBlocks(levelData.MovableInfo);
             PlaceGates(levelData.ExitInfo);
@@ -72,7 +73,7 @@ namespace Main.Scripts
             {
                 for (var j = 0; j < _columnCount; j++)
                 {
-                    _board[i, j] = -1;
+                    _board[i, j].BlockID = NoBlock;
                 }
             }
             
@@ -83,14 +84,14 @@ namespace Main.Scripts
                 var i = movableInfo.Row;
                 var j = movableInfo.Col;
                 var length = movableInfo.Length;
+                var color = movableInfo.Colors.ToBlockColor();
                 var blockPrefab = GetBlockPrefab(length);
                 var position = GetPosition(i, j);
                 var rotation = GetRotation((direction + 1) % 2);
                 var id = index;
-                var texture = GetBlockTexture(length, movableInfo.Colors, (Direction)direction);
                 
                 var blockView = Instantiate(blockPrefab, position, rotation, transform);
-                blockView.Init(this, id, length, (Direction)direction, texture);
+                blockView.Init(this, id, length, (Direction)direction, color);
                 _blocks.Add(blockView.ID, blockView);
                 
                 PlaceBlockToBoard(blockView.ID, i, j);
@@ -128,7 +129,7 @@ namespace Main.Scripts
             {
                 for (var j = pivotJ; j < jOffset; j++)
                 {
-                    _board[i, j] = id;
+                    _board[i, j].BlockID = id;
                 }
             }
         }
@@ -150,20 +151,20 @@ namespace Main.Scripts
                 var meshRenderers = gate.transform.GetComponentsInChildren<MeshRenderer>();
                 foreach (var meshRenderer in meshRenderers)
                 {
-                    meshRenderer.material.color = GetGateColor(exitInfo.Colors);
+                    meshRenderer.material.color = GetGateColor(exitInfo.Colors.ToBlockColor());
                 }
             }
         }
         
-        private Color GetGateColor(int color)
+        private Color GetGateColor(BlockColor color)
         {
             return color switch
             {
-                0 => colorRed,
-                1 => colorGreen,
-                2 => colorBlue,
-                3 => colorYellow,
-                4 => colorPurple,
+                BlockColor.Red => colorRed,
+                BlockColor.Green => colorGreen,
+                BlockColor.Blue => colorBlue,
+                BlockColor.Yellow => colorYellow,
+                BlockColor.Purple => colorPurple,
                 _ => Color.white
             };
         }
@@ -178,28 +179,26 @@ namespace Main.Scripts
             };
         }
         
-        private Texture2D GetBlockTexture(int length, int color, Direction direction)
+        public Texture GetBlockTexture(int length, BlockColor color, bool isParallel)
         {
-            var isParallel = direction.IsVertical();
-            
             return length switch
             {
                 1 => color switch
                 {
-                    0 => isParallel ? block1TextureRedParallel : block1TextureRedUp,
-                    1 => isParallel ? block1TextureGreenParallel : block1TextureGreenUp,
-                    2 => isParallel ? block1TextureBlueParallel : block1TextureBlueUp,
-                    3 => isParallel ? block1TextureYellowParallel : block1TextureYellowUp,
-                    4 => isParallel ? block1TexturePurpleParallel : block1TexturePurpleUp,
+                    BlockColor.Red => isParallel ? block1TextureRedParallel : block1TextureRedUp,
+                    BlockColor.Green => isParallel ? block1TextureGreenParallel : block1TextureGreenUp,
+                    BlockColor.Blue => isParallel ? block1TextureBlueParallel : block1TextureBlueUp,
+                    BlockColor.Yellow => isParallel ? block1TextureYellowParallel : block1TextureYellowUp,
+                    BlockColor.Purple => isParallel ? block1TexturePurpleParallel : block1TexturePurpleUp,
                     _ => null
                 },
                 2 => color switch
                 {
-                    0 => isParallel ? block2TextureRedParallel : block2TextureRedUp,
-                    1 => isParallel ? block2TextureGreenParallel : block2TextureGreenUp,
-                    2 => isParallel ? block2TextureBlueParallel : block2TextureBlueUp,
-                    3 => isParallel ? block2TextureYellowParallel : block2TextureYellowUp,
-                    4 => isParallel ? block2TexturePurpleParallel : block2TexturePurpleUp,
+                    BlockColor.Red => isParallel ? block2TextureRedParallel : block2TextureRedUp,
+                    BlockColor.Green => isParallel ? block2TextureGreenParallel : block2TextureGreenUp,
+                    BlockColor.Blue => isParallel ? block2TextureBlueParallel : block2TextureBlueUp,
+                    BlockColor.Yellow => isParallel ? block2TextureYellowParallel : block2TextureYellowUp,
+                    BlockColor.Purple => isParallel ? block2TexturePurpleParallel : block2TexturePurpleUp,
                     _ => null
                 },
                 _ => null
@@ -283,7 +282,7 @@ namespace Main.Scripts
                     for (var k = bottomEdgeIndex[0] + 1; k <= _boardBottom; k++)
                     {
                         var cell = _board[k, bottomEdgeIndex[1]];
-                        if (cell != -1)
+                        if (cell.BlockID != NoBlock)
                         {
                             if (maxI > k)
                             {
@@ -320,7 +319,7 @@ namespace Main.Scripts
                     for (var k = topEdgeIndex[0] - 1; k >= _boardTop; k--)
                     {
                         var cell = _board[k, topEdgeIndex[1]]; 
-                        if (cell != -1)
+                        if (cell.BlockID != NoBlock)
                         {
                             if (minI < k)
                             {
@@ -357,7 +356,7 @@ namespace Main.Scripts
                     for (var l = rightEdgeIndex[1] + 1; l <= _boardRight; l++)
                     {
                         var cell = _board[rightEdgeIndex[0], l]; 
-                        if (cell != -1)
+                        if (cell.BlockID != NoBlock)
                         {
                             if (maxJ > l)
                             {
@@ -394,7 +393,7 @@ namespace Main.Scripts
                     for (var l = leftEdgeIndex[1] - 1; l >= _boardLeft; l--)
                     {
                         var cell = _board[leftEdgeIndex[0], l]; 
-                        if (cell != -1)
+                        if (cell.BlockID != NoBlock)
                         {
                             if (minJ < l)
                             {
@@ -429,7 +428,7 @@ namespace Main.Scripts
             {
                 for (var j = 0; j < _board.GetLength(1); j++)
                 {
-                    if (_board[i, j] != -1)
+                    if (_board[i, j].BlockID != NoBlock)
                     {
                         Gizmos.color = Color.red;
                         Gizmos.DrawCube(GetPosition(i, j) + Vector3.up*1f, Vector3.one * 0.1f);
@@ -439,11 +438,27 @@ namespace Main.Scripts
         }
     }
     
+    public struct Cell
+    {
+        public int BlockID;
+        public BlockColor GateColor;
+    }
+    
     public enum Direction
     {
         Up,
         Right,
         Down,
         Left
+    }
+    
+    public enum BlockColor
+    {
+        None,
+        Red,
+        Green,
+        Blue,
+        Yellow,
+        Purple
     }
 }

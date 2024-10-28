@@ -13,17 +13,19 @@ namespace Main.Scripts
         public int PivotJ { get; private set; }
         public int RowCount { get; private set; }
         public int ColumnCount { get; private set; }
+        public BlockColor BlockColor { get; private set; }
         
         private Direction _direction;
         
-        public void Init(GameBoard gameBoard, int id, int length, Direction direction, Texture texture)
+        public void Init(GameBoard gameBoard, int id, int length, Direction direction, BlockColor color)
         {
             ID = id;
             _gameBoard = gameBoard;
             _direction = direction;
             RowCount = direction.IsHorizontal() ? 1 : length;
             ColumnCount = direction.IsVertical() ? 1 : length;
-            meshRenderer.material.mainTexture = texture;
+            BlockColor = color;
+            meshRenderer.material.mainTexture = _gameBoard.GetBlockTexture(length, color, direction.IsVertical());
         }
         
         public void SetPivot(int pivotI, int pivotJ)

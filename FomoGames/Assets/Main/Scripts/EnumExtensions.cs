@@ -23,5 +23,18 @@ namespace Main.Scripts
         {
             return direction == Direction.Up || direction == Direction.Down;
         }
+        
+        public static BlockColor ToBlockColor(this int value)
+        {
+            return (value + 1) switch
+            {
+                1 => BlockColor.Red,
+                2 => BlockColor.Green,
+                3 => BlockColor.Blue,
+                4 => BlockColor.Yellow,
+                5 => BlockColor.Purple,
+                _ => BlockColor.None
+            };
+        }
     }
 }
