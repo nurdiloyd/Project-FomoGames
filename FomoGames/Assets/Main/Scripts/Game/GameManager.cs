@@ -28,11 +28,12 @@ namespace Main.Scripts
         
         public void LoadLevel()
         {
-            var levelData = GameController.Instance.DataManager.GetCurrentLevelData();
+            var dataManager = GameController.Instance.DataManager;
+            var levelData = dataManager.GetCurrentLevelData();
             _gameBoard.Init(levelData);
             _moveCount = levelData.MoveLimit == 0 ? InfinityMove : levelData.MoveLimit;
             
-            _gameUI.SetLevelText(GameController.Instance.DataManager.CurrentLevelIndex + 1);
+            _gameUI.SetLevelText(dataManager.User.levelIndex + 1);
             _gameUI.SetMoveCountText(_moveCount);
         }
         
@@ -69,22 +70,20 @@ namespace Main.Scripts
             var seq = DOTween.Sequence();
             seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutBack));
             seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.InBack));
+            
             if (goOutside)
             {
                 seq.AppendCallback(() => Object.Destroy(blockView.gameObject));
             }
-            seq.AppendCallback(CheckEndOfGame);
-        }
-        
-        private void CheckEndOfGame()
-        {
+            
             if (!_gameBoard.IsThereAnyBlock)
             {
-                _gameUI.ShowLevelWinDialog();
+                GameController.Instance.DataManager.IncreaseCurrentLevelIndex();
+                seq.AppendCallback(_gameUI.ShowLevelWinDialog);
             }
             else if (!HasMove)
             {
-                _gameUI.ShowLevelLoseDialog();
+                seq.AppendCallback(_gameUI.ShowLevelLoseDialog);
             }
         }
         
@@ -107,7 +106,6 @@ namespace Main.Scripts
         
         public void NextLevel()
         {
-            GameController.Instance.DataManager.IncreaseCurrentLevelIndex();
             _gameBoard.Clear();
             LoadLevel();
         }

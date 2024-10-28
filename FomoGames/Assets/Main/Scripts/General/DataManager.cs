@@ -9,13 +9,36 @@ namespace Main.Scripts
         private static readonly string PersistentPath = Application.persistentDataPath;
         private static readonly string LevelsPath = Path.Combine(PersistentPath, "Levels");
         
-        public int CurrentLevelIndex { get; private set; }
         private int _totalLevelCount;
+        public UserData User { get; private set; }
         
         public void Bind()
         {
             CopyLevelDataFromStreamingAssets();
             _totalLevelCount = Directory.GetFiles(LevelsPath, "*.json").Length;
+            LoadUserData();
+        }
+
+        private void LoadUserData()
+        {
+            var destinationPath = PersistentPath;
+            if (!Directory.Exists(destinationPath))
+            {
+                Directory.CreateDirectory(destinationPath);
+            }
+            
+            var userDataPath = Path.Combine(destinationPath, "UserData.json");
+            if (File.Exists(userDataPath))
+            {
+                var jsonFile = File.ReadAllText(userDataPath);
+                var userData = JsonUtility.FromJson<UserData>(jsonFile);
+                User = userData;
+            }
+            else
+            {
+                User = new UserData();
+                SaveUserData();
+            }
         }
         
         private void CopyLevelDataFromStreamingAssets()
@@ -43,16 +66,31 @@ namespace Main.Scripts
         
         public void IncreaseCurrentLevelIndex()
         {
-            CurrentLevelIndex = (CurrentLevelIndex + 1) % _totalLevelCount;
+            User.levelIndex = (User.levelIndex + 1) % _totalLevelCount;
+            SaveUserData();
+        }
+        
+        private void SaveUserData()
+        {
+            var destinationPath = PersistentPath;
+            var userDataPath = Path.Combine(destinationPath, "UserData.json");
+            var jsonFile = JsonUtility.ToJson(User);
+            File.WriteAllText(userDataPath, jsonFile);
         }
         
         public LevelData GetCurrentLevelData()
         {
             var levelFiles = Directory.GetFiles(LevelsPath, "*.json");
-            var jsonFile = File.ReadAllText(levelFiles[CurrentLevelIndex]);
+            var jsonFile = File.ReadAllText(levelFiles[User.levelIndex]);
             var levelData = JsonUtility.FromJson<LevelData>(jsonFile);
             return levelData;
         }
+    }
+    
+    [Serializable]
+    public class UserData
+    {
+        public int levelIndex;
     }
     
     [Serializable]
