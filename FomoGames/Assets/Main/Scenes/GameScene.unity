@@ -547,8 +547,7 @@ MonoBehaviour:
   colorPurple: {r: 0.7608986, g: 0, b: 1, a: 1}
   colorRed: {r: 1, g: 0.042452812, b: 0.042452812, a: 1}
   colorYellow: {r: 1, g: 0.8389567, b: 0, a: 1}
-  cellPrefab: {fileID: 7202523119255453781, guid: cf335b40653f249418a0afcbd973ca02, type: 3}
-  gatePrefab: {fileID: 3653519712009661678, guid: 25c623d57c4714f69a247f5a059d545a, type: 3}
+  gatePrefab: {fileID: 5678917984507737719, guid: 25c623d57c4714f69a247f5a059d545a, type: 3}
   block1Prefab: {fileID: -9170999731797745824, guid: 07e58df38b127449a9675a8df745ec24, type: 3}
   block2Prefab: {fileID: -9051925752601077069, guid: 26e1b4dad82164b278e541f451aaf28d, type: 3}
   block1TextureBlueParallel: {fileID: 2800000, guid: ff0bd83b4f9b0440aa832564c9a33f54, type: 3}

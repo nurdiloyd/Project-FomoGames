@@ -1,4 +1,3 @@
-using DG.Tweening;
 using UnityEngine;
 
 namespace Main.Scripts
@@ -15,17 +14,17 @@ namespace Main.Scripts
         public int ColumnCount { get; private set; }
         public BlockColor BlockColor { get; private set; }
         
-        private Direction _direction;
+        private BlockDirection _blockDirection;
         
-        public void Init(GameBoard gameBoard, int id, int length, Direction direction, BlockColor color)
+        public void Init(GameBoard gameBoard, int id, int length, BlockDirection blockDirection, BlockColor color)
         {
             ID = id;
             _gameBoard = gameBoard;
-            _direction = direction;
-            RowCount = direction.IsHorizontal() ? 1 : length;
-            ColumnCount = direction.IsVertical() ? 1 : length;
+            _blockDirection = blockDirection;
+            RowCount = blockDirection.IsHorizontal() ? 1 : length;
+            ColumnCount = blockDirection.IsVertical() ? 1 : length;
             BlockColor = color;
-            meshRenderer.material.mainTexture = _gameBoard.GetBlockTexture(length, color, direction.IsVertical());
+            meshRenderer.material.mainTexture = _gameBoard.GetBlockTexture(length, BlockColor, _blockDirection.IsVertical());
         }
         
         public void SetPivot(int pivotI, int pivotJ)
@@ -34,9 +33,9 @@ namespace Main.Scripts
             PivotJ = pivotJ;
         }
         
-        public bool CanMoveOnAxis(Direction direction)
+        public bool CanMoveOnAxis(BlockDirection direction)
         {
-            return _direction == direction || _direction == direction.GetInverse();
+            return _blockDirection == direction || _blockDirection == direction.GetInverse();
         }
         
         public void Select()

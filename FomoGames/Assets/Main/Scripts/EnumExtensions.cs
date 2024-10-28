@@ -2,26 +2,26 @@ namespace Main.Scripts
 {
     public static class EnumExtensions
     {
-        public static Direction GetInverse(this Direction direction)
+        public static BlockDirection GetInverse(this BlockDirection blockDirection)
         {
-            return direction switch
+            return blockDirection switch
             {
-                Direction.Up => Direction.Down,
-                Direction.Right => Direction.Left,
-                Direction.Down => Direction.Up,
-                Direction.Left => Direction.Right,
-                _ => Direction.Up
+                BlockDirection.Up => BlockDirection.Down,
+                BlockDirection.Right => BlockDirection.Left,
+                BlockDirection.Down => BlockDirection.Up,
+                BlockDirection.Left => BlockDirection.Right,
+                _ => BlockDirection.Up
             };
         }
         
-        public static bool IsHorizontal(this Direction direction)
+        public static bool IsHorizontal(this BlockDirection blockDirection)
         {
-            return direction == Direction.Left || direction == Direction.Right;
+            return blockDirection == BlockDirection.Left || blockDirection == BlockDirection.Right;
         }
         
-        public static bool IsVertical(this Direction direction)
+        public static bool IsVertical(this BlockDirection blockDirection)
         {
-            return direction == Direction.Up || direction == Direction.Down;
+            return blockDirection == BlockDirection.Up || blockDirection == BlockDirection.Down;
         }
         
         public static BlockColor ToBlockColor(this int value)
@@ -34,6 +34,18 @@ namespace Main.Scripts
                 4 => BlockColor.Yellow,
                 5 => BlockColor.Purple,
                 _ => BlockColor.None
+            };
+        }
+        
+        public static BlockDirection ToBlockDirection(this int value)
+        {
+            return value switch
+            {
+                0 => BlockDirection.Up,
+                1 => BlockDirection.Right,
+                2 => BlockDirection.Down,
+                3 => BlockDirection.Left,
+                _ => BlockDirection.Up
             };
         }
     }
