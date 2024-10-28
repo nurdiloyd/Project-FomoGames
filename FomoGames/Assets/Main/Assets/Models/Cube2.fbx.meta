@@ -3,7 +3,12 @@ guid: 3bd3528bfa52941a2ab320780de2bc0c
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TT_checker_map_gravity
+    second: {fileID: 2100000, guid: 16f7b5715e2cd433cb4f673650e4e334, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

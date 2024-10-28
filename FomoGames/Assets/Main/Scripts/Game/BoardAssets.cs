@@ -44,26 +44,26 @@ namespace Main.Scripts
             };
         }
         
-        public Texture GetBlockTexture(int length, BlockColor color, bool isParallel)
+        public Texture GetBlockTexture(int length, BlockColor color, bool isHorizontal)
         {
             return length switch
             {
                 1 => color switch
                 {
-                    BlockColor.Red => isParallel ? block1TextureRedParallel : block1TextureRedUp,
-                    BlockColor.Green => isParallel ? block1TextureGreenParallel : block1TextureGreenUp,
-                    BlockColor.Blue => isParallel ? block1TextureBlueParallel : block1TextureBlueUp,
-                    BlockColor.Yellow => isParallel ? block1TextureYellowParallel : block1TextureYellowUp,
-                    BlockColor.Purple => isParallel ? block1TexturePurpleParallel : block1TexturePurpleUp,
+                    BlockColor.Red => isHorizontal ? block1TextureRedParallel : block1TextureRedUp,
+                    BlockColor.Green => isHorizontal ? block1TextureGreenParallel : block1TextureGreenUp,
+                    BlockColor.Blue => isHorizontal ? block1TextureBlueParallel : block1TextureBlueUp,
+                    BlockColor.Yellow => isHorizontal ? block1TextureYellowParallel : block1TextureYellowUp,
+                    BlockColor.Purple => isHorizontal ? block1TexturePurpleParallel : block1TexturePurpleUp,
                     _ => null
                 },
                 2 => color switch
                 {
-                    BlockColor.Red => isParallel ? block2TextureRedParallel : block2TextureRedUp,
-                    BlockColor.Green => isParallel ? block2TextureGreenParallel : block2TextureGreenUp,
-                    BlockColor.Blue => isParallel ? block2TextureBlueParallel : block2TextureBlueUp,
-                    BlockColor.Yellow => isParallel ? block2TextureYellowParallel : block2TextureYellowUp,
-                    BlockColor.Purple => isParallel ? block2TexturePurpleParallel : block2TexturePurpleUp,
+                    BlockColor.Red => isHorizontal ? block2TextureRedParallel : block2TextureRedUp,
+                    BlockColor.Green => isHorizontal ? block2TextureGreenParallel : block2TextureGreenUp,
+                    BlockColor.Blue => isHorizontal ? block2TextureBlueParallel : block2TextureBlueUp,
+                    BlockColor.Yellow => isHorizontal ? block2TextureYellowParallel : block2TextureYellowUp,
+                    BlockColor.Purple => isHorizontal ? block2TexturePurpleParallel : block2TexturePurpleUp,
                     _ => null
                 },
                 _ => null
