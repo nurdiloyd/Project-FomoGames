@@ -13,5 +13,15 @@ namespace Main.Scripts
                 _ => Direction.Up
             };
         }
+        
+        public static bool IsHorizontal(this Direction direction)
+        {
+            return direction == Direction.Left || direction == Direction.Right;
+        }
+        
+        public static bool IsVertical(this Direction direction)
+        {
+            return direction == Direction.Up || direction == Direction.Down;
+        }
     }
 }

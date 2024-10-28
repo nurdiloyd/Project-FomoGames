@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Main.Scripts
 {
@@ -12,7 +13,6 @@ namespace Main.Scripts
         
         public const float CellWidth = 1;
         
-        public GameObject cellPrefab;
         public GameObject gatePrefab;
         public BlockView block1Prefab;
         public BlockView block2Prefab;
@@ -37,31 +37,32 @@ namespace Main.Scripts
         public Texture2D block2TextureYellowParallel;
         public Texture2D block2TextureYellowUp;
         
-        private bool[,] _board;
+        private int[,] _board;
+        private Dictionary<int, BlockView> _blocks = new();
         private Vector3 _initialPosition;
+        private int _boardTop;
+        private int _boardRight;
+        private int _boardBottom;
+        private int _boardLeft;
         
         public void Init(LevelData levelData)
         {
             var columnCount = levelData.ColCount;
             var rowCount = levelData.RowCount;
-            _board = new bool[rowCount, columnCount];
+            _board = new int[rowCount, columnCount];
             
             _initialPosition = new Vector3((1 - columnCount) / 2f, 0f, -(1 - rowCount) / 2f) * CellWidth;
-            var pos = _initialPosition;
+            _boardTop = 0;
+            _boardRight = columnCount - 1;
+            _boardBottom = rowCount - 1;
+            _boardLeft = 0;
             
             for (var i = 0; i < rowCount; i++)
             {
                 for (var j = 0; j < columnCount; j++)
                 {
-                    _board[i, j] = false;
-                    var cell = Instantiate(cellPrefab, pos, Quaternion.identity, transform);
-                    cell.name = $"Cell_{i}_{j}";
-                    
-                    pos.x += CellWidth;
+                    _board[i, j] = -1;
                 }
-                
-                pos.x = (1 - columnCount) / 2f * CellWidth;
-                pos.z -= CellWidth;
             }
             
             PlaceBlocks(levelData.MovableInfo);
@@ -76,15 +77,33 @@ namespace Main.Scripts
                 var direction = movableInfo.Direction[0];
                 var i = movableInfo.Row;
                 var j = movableInfo.Col;
-                var blockPrefab = GetBlockPrefab(movableInfo.Length);
+                var length = movableInfo.Length;
+                var blockPrefab = GetBlockPrefab(length);
                 var position = GetPosition(i, j);
                 var rotation = GetRotation((direction + 1) % 2);
                 
                 var blockView = Instantiate(blockPrefab, position, rotation, transform);
-                blockView.Init((Direction)direction);
+                blockView.Init(this, index, i, j, length, (Direction)direction);
+                _blocks.Add(index, blockView);
                 
                 var meshRenderer = blockView.transform.GetChild(0).GetComponent<MeshRenderer>();
                 meshRenderer.material.mainTexture = GetBlockTexture(movableInfo.Length, movableInfo.Colors, movableInfo.Direction[0]);
+                
+                PlaceBlockToBoard(i, j, index, length, (Direction)direction);
+            }
+        }
+        
+        private void PlaceBlockToBoard(int i, int j, int id, int length, Direction direction)
+        {
+            var iOffset = i + (direction == Direction.Up || direction == Direction.Down ? length : 1);
+            var jOffset = j + (direction == Direction.Right || direction == Direction.Left ? length : 1);
+            
+            for (var k = i; k < iOffset; k++)
+            {
+                for (var l = j; l < jOffset; l++)
+                {
+                    _board[k, l] = id;
+                }
             }
         }
         
@@ -193,6 +212,144 @@ namespace Main.Scripts
             {
                 return Direction.Up;
             }
+        }
+        
+        public Vector3 GetTargetPosition(int id, Direction direction)
+        {
+            var blockView = _blocks[id];
+            var pivotI = blockView.PivotI;
+            var pivotJ = blockView.PivotJ;
+            
+            var targetI = pivotI;
+            var targetJ = pivotJ;
+            
+            Debug.Log(direction);
+            if (direction == Direction.Down)
+            {
+                var bottomEdgeIndexes = new List<List<int>>();
+                
+                var i = pivotI + blockView.RowCount - 1;
+                for (var j = pivotJ; j < pivotJ + blockView.ColumnCount; j++)
+                {
+                    bottomEdgeIndexes.Add(new List<int> {i, j});
+                }
+                
+                var maxI = _boardBottom + 1;
+                foreach (var bottomEdgeIndex in bottomEdgeIndexes)
+                {
+                    for (var k = bottomEdgeIndex[0] + 1; k <= _boardBottom; k++)
+                    {
+                        var cell = _board[k, bottomEdgeIndex[1]];
+                        if (cell != -1 && cell != id)
+                        {
+                            if (maxI > k)
+                            {
+                                maxI = k;
+                            }
+                            
+                            break;
+                        }
+                    }
+                }
+                
+                targetI = maxI - blockView.RowCount;
+                targetJ = pivotJ;
+            }
+            else if (direction == Direction.Up)
+            {
+                var topEdgeIndexes = new List<List<int>>();
+                
+                var i = pivotI;
+                for (var j = pivotJ; j < pivotJ + blockView.ColumnCount; j++)
+                {
+                    topEdgeIndexes.Add(new List<int> {i, j});
+                }
+                
+                var minI = _boardTop - 1;
+                foreach (var topEdgeIndex in topEdgeIndexes)
+                {
+                    for (var k = topEdgeIndex[0] - 1; k >= _boardTop; k--)
+                    {
+                        var cell = _board[k, topEdgeIndex[1]]; 
+                        if (cell != -1 && cell != id)
+                        {
+                            if (minI < k)
+                            {
+                                minI = k;
+                            }
+                            
+                            break;
+                        }
+                    }
+                }
+                
+                targetI = minI + 1;
+                targetJ = pivotJ;
+            }
+            else if (direction == Direction.Right)
+            {
+                var rightEdgeIndexes = new List<List<int>>();
+                
+                var j = pivotJ + blockView.ColumnCount - 1;
+                for (var i = pivotI; i < pivotI + blockView.RowCount; i++)
+                {
+                    rightEdgeIndexes.Add(new List<int> {i, j});
+                }
+                
+                var maxJ = _boardRight + 1;
+                foreach (var rightEdgeIndex in rightEdgeIndexes)
+                {
+                    for (var l = rightEdgeIndex[1] + 1; l <= _boardRight; l++)
+                    {
+                        var cell = _board[rightEdgeIndex[0], l]; 
+                        if (cell != -1 && cell != id)
+                        {
+                            if (maxJ > l)
+                            {
+                                maxJ = l;
+                            }
+                            
+                            break;
+                        }
+                    }
+                }
+                
+                targetI = pivotI;
+                targetJ = maxJ - blockView.ColumnCount;
+            }
+            else if (direction == Direction.Left)
+            {
+                var leftEdgeIndexes = new List<List<int>>();
+                
+                var j = pivotJ;
+                for (var i = pivotI; i < pivotI + blockView.RowCount; i++)
+                {
+                    leftEdgeIndexes.Add(new List<int> {i, j});
+                }
+                
+                var minJ = _boardLeft - 1;
+                foreach (var leftEdgeIndex in leftEdgeIndexes)
+                {
+                    for (var l = leftEdgeIndex[1] - 1; l >= _boardLeft; l--)
+                    {
+                        var cell = _board[leftEdgeIndex[0], l]; 
+                        if (cell != -1 && cell != id)
+                        {
+                            if (minJ < l)
+                            {
+                                minJ = l;
+                            }
+                            
+                            break;
+                        }
+                    }
+                }
+                
+                targetI = pivotI;
+                targetJ = minJ + 1;
+            }
+            
+            return GetPosition(targetI, targetJ);
         }
     }
     
