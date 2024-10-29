@@ -9,14 +9,14 @@ namespace Main.Scripts
         private GameManager _gameManager;
         private BlockView _blockView;
         private bool _blockSelected;
-        private const float SwipeLengthThreshold = 0.25f;
-        private const float SwipeAngleThreshold = 30f;
+        private const float SwipeLengthThreshold = 0.1f;
+        private const float SwipeAngleThreshold = 45f;
         private CameraManager _cameraManager;
         
         public void Bind()
         {
-            _cameraManager = GameController.Instance.CameraManager;
-            _gameManager = GameController.Instance.GameManager;
+            _cameraManager = ContextController.Instance.CameraManager;
+            _gameManager = ContextController.Instance.GameManager;
         }
         
         public void ManualUpdate()
@@ -52,11 +52,11 @@ namespace Main.Scripts
                 if (_blockView.CanMoveOnAxis(moveDirection))
                 {
                     var worldPointA = _startPosition;
-                    worldPointA.z = _cameraManager.RenderDistance + 0.1f;
+                    worldPointA.z = _cameraManager.RenderDistance;
                     worldPointA = _cameraManager.ScreenToWorldPoint(worldPointA);
                 
                     var worldPointB = _endPosition;
-                    worldPointB.z = _cameraManager.RenderDistance + 0.1f;
+                    worldPointB.z = _cameraManager.RenderDistance;
                     worldPointB = _cameraManager.ScreenToWorldPoint(worldPointB);
                     
                     var worldDistance = (worldPointA - worldPointB).magnitude;

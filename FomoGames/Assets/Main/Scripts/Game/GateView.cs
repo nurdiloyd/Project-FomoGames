@@ -19,7 +19,7 @@ namespace Main.Scripts
             GateDirection = direction;
             GateColor = color;
             
-            var matColor = GameController.Instance.GameManager.BoardAssets.GetGateColor(GateColor);
+            var matColor = ContextController.Instance.GameManager.BoardAssets.GetGateColor(GateColor);
             foreach (var meshRenderer in meshRenderers)
             {
                 meshRenderer.material.color = matColor;

@@ -28,7 +28,7 @@ namespace Main.Scripts
         
         public void LoadLevel()
         {
-            var dataManager = GameController.Instance.DataManager;
+            var dataManager = ContextController.Instance.DataManager;
             var levelData = dataManager.GetCurrentLevelData();
             _gameBoard.Init(levelData);
             _moveCount = levelData.MoveLimit == 0 ? InfinityMove : levelData.MoveLimit;
@@ -90,7 +90,7 @@ namespace Main.Scripts
             var isLose = !HasMove;
             if (isWin)
             {
-                GameController.Instance.DataManager.IncreaseCurrentLevelIndex();
+                ContextController.Instance.DataManager.IncreaseCurrentLevelIndex();
                 seq.AppendCallback(_gameUI.ShowLevelWinDialog);
             }
             else if (isLose)

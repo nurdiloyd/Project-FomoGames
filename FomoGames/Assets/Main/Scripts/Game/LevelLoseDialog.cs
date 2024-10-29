@@ -6,7 +6,7 @@ namespace Main.Scripts.Game
     {
         public void OnContinueButtonClick()
         {
-            GameController.Instance.GameManager.TryAgain();
+            ContextController.Instance.GameManager.TryAgain();
             Destroy(gameObject);
         }
     }

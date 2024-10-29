@@ -24,7 +24,7 @@ namespace Main.Scripts
         
         public void Init(LevelData levelData)
         {
-            _gameManager = GameController.Instance.GameManager;
+            _gameManager = ContextController.Instance.GameManager;
             _boardParent = new GameObject("Board").transform;
             
             _rowCount = levelData.RowCount;

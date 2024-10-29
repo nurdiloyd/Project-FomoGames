@@ -29,7 +29,7 @@ namespace Main.Scripts
             ColumnCount = blockDirection.IsVertical() ? 1 : length;
             BlockColor = color;
             
-            var gameManager = GameController.Instance.GameManager;
+            var gameManager = ContextController.Instance.GameManager;
             meshRenderer.material.mainTexture = gameManager.BoardAssets.GetBlockTexture(length, BlockColor, _blockDirection.IsHorizontal());
             
             var matColor = gameManager.BoardAssets.GetGateColor(BlockColor);

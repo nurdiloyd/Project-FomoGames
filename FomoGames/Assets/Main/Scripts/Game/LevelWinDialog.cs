@@ -6,7 +6,7 @@ namespace Main.Scripts.Game
     {
         public void OnContinueButtonClick()
         {
-            GameController.Instance.GameManager.NextLevel();
+            ContextController.Instance.GameManager.NextLevel();
             Destroy(gameObject);
         }
     }

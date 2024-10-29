@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace Main.Scripts
 {
-    public class GameController : MonoBehaviour
+    public class ContextController : MonoBehaviour
     {
-        public static GameController Instance { get; private set; }
+        public static ContextController Instance { get; private set; }
         
         [SerializeField] private Camera mainCamera;
         [SerializeField] private GameUI gameUI;
