@@ -45,6 +45,11 @@ namespace Main.Scripts
                 }
             }
             
+            var boardGroundPrefab = _gameManager.BoardAssets.boardGround;
+            var boardGround = Object.Instantiate(boardGroundPrefab, _boardParent);
+            boardGround.localScale = new Vector3(_columnCount, 1f, _rowCount) * 0.1f;
+            boardGround.position = new Vector3(0, -0.01f, 0f);
+            
             SpawnBlocks(levelData.MovableInfo);
             SpawnGates(levelData.ExitInfo);
         }
@@ -120,7 +125,7 @@ namespace Main.Scripts
                 var position = GetCellPosition(i + iOffset, j + jOffset);
                 var rotation = Quaternion.Euler(0f, 90f * direction, 0f);
                 var gateColor = exitInfo.Colors.ToBlockColor();
-                var gatePrefab = _gameManager.BoardAssets.GetGatePrefab();
+                var gatePrefab = _gameManager.BoardAssets.gatePrefab;
                 
                 var gateView = Object.Instantiate(gatePrefab, position, rotation, _boardParent);
                 gateView.Init(direction.ToBlockDirection(), gateColor);
@@ -141,13 +146,13 @@ namespace Main.Scripts
             return _blocks[id];
         }
         
-        public Vector3 GetCellPosition(int i, int j)
+        public Vector3 GetCellPosition(float i, float j)
         {
             return _initialPosition + new Vector3(j, 0f, -i) * CellWidth;
         }
         
         public (int i, int j) GetTargetIndex(int id, BlockDirection moveDirection, 
-            out int outsideI, out int outsideJ, out bool goOutside, out GateView gateView)
+            out float outsideI, out float outsideJ, out bool goOutside, out GateView gateView)
         {
             var blockView = GetBlock(id);
             var pivotI = blockView.PivotI;
@@ -158,10 +163,11 @@ namespace Main.Scripts
             
             var targetI = pivotI;
             var targetJ = pivotJ;
-            outsideI = targetI;
-            outsideJ = targetJ;
+            outsideI = -1;
+            outsideJ = -1;
             goOutside = false;
             gateView = null;
+            var outsideOffset = 0.5f;
             
             if (moveDirection == BlockDirection.Down)
             {
@@ -187,15 +193,12 @@ namespace Main.Scripts
                 targetI = maxI - rowCount;
                 targetJ = pivotJ;
                 
-                outsideI = targetI;
-                outsideJ = targetJ;
-                
                 if (noBlock)
                 {
                     var gates = _board[_boardBottom, targetJ].Gates;
                     if (CanExit(gates, out gateView))
                     {
-                        outsideI = _boardBottom + 1;
+                        outsideI = _boardBottom + 1 + outsideOffset;
                         outsideJ = targetJ;
                         goOutside = true;
                     }
@@ -225,15 +228,12 @@ namespace Main.Scripts
                 targetI = minI + 1;
                 targetJ = pivotJ;
                 
-                outsideI = targetI;
-                outsideJ = targetJ;
-                
                 if (noBlock)
                 {
                     var gates = _board[_boardTop, targetJ].Gates;
                     if (CanExit(gates, out gateView))
                     {
-                        outsideI = _boardTop - rowCount;
+                        outsideI = _boardTop - rowCount - outsideOffset;
                         outsideJ = targetJ;
                         goOutside = true;
                     }
@@ -263,16 +263,13 @@ namespace Main.Scripts
                 targetI = pivotI;
                 targetJ = maxJ - columnCount;
                 
-                outsideI = targetI;
-                outsideJ = targetJ;
-                
                 if (noBlock)
                 {
                     var gates = _board[targetI, _boardRight].Gates;
                     if (CanExit(gates, out gateView))
                     {
                         outsideI = targetI;
-                        outsideJ = _boardRight + 1;
+                        outsideJ = _boardRight + 1 + outsideOffset;
                         goOutside = true;
                     }
                 }
@@ -301,16 +298,13 @@ namespace Main.Scripts
                 targetI = pivotI;
                 targetJ = minJ + 1;
                 
-                outsideI = targetI;
-                outsideJ = targetJ;
-                
                 if (noBlock)
                 {
                     var gates = _board[targetI, _boardLeft].Gates;
                     if (CanExit(gates, out gateView))
                     {
                         outsideI = targetI;
-                        outsideJ = _boardLeft - columnCount;
+                        outsideJ = _boardLeft - columnCount - outsideOffset;
                         goOutside = true;
                     }
                 }

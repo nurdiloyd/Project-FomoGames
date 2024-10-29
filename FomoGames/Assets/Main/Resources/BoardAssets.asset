@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce65d15b4432f4317bad3dae1bd33ff9, type: 3}
   m_Name: BoardAssets
   m_EditorClassIdentifier: 
+  boardGround: {fileID: 305517275691770331, guid: 6e734287e5a2840f091b776a99f2c9ca, type: 3}
   gatePrefab: {fileID: 5678917984507737719, guid: 25c623d57c4714f69a247f5a059d545a, type: 3}
   block1Prefab: {fileID: -9170999731797745824, guid: 07e58df38b127449a9675a8df745ec24, type: 3}
   block2Prefab: {fileID: -9051925752601077069, guid: 26e1b4dad82164b278e541f451aaf28d, type: 3}

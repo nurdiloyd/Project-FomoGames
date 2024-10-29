@@ -5,7 +5,8 @@ namespace Main.Scripts
     [CreateAssetMenu]
     public class BoardAssets : ScriptableObject
     {
-        [SerializeField] private GateView gatePrefab;
+        public Transform boardGround;
+        public GateView gatePrefab;
         [SerializeField] private BlockView block1Prefab;
         [SerializeField] private BlockView block2Prefab;
         [SerializeField] private Texture2D block1TextureBlueParallel;
@@ -68,11 +69,6 @@ namespace Main.Scripts
                 },
                 _ => null
             };
-        }
-        
-        public GateView GetGatePrefab()
-        {
-            return gatePrefab;
         }
         
         public Color GetGateColor(BlockColor color)

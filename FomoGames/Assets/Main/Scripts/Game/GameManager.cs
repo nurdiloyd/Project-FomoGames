@@ -45,8 +45,6 @@ namespace Main.Scripts
             var (targetI, targetJ) = _gameBoard.GetTargetIndex(id, moveDirection,
                 out var outsideI, out var outsideJ, out var goOutside, out var gateView);
             
-            var isMoved = !(targetI == pivotI && targetJ == pivotJ);
-            
             _gameBoard.RemoveBlock(blockView.ID);
             if (goOutside)
             {
@@ -57,24 +55,31 @@ namespace Main.Scripts
                 _gameBoard.PlaceBlock(blockView.ID, targetI, targetJ);
             }
             
+            var isMoved = !(targetI == pivotI && targetJ == pivotJ);
             if (isMoved)
             {
                 DecreaseMoveCount();
             }
             
-            var difference = Math.Max(Math.Abs(targetI - pivotI), Math.Abs(targetJ - pivotJ));
-            var duration = 0.1f * difference;
             var targetPosition = _gameBoard.GetCellPosition(targetI, targetJ);
             var outsidePosition = _gameBoard.GetCellPosition(outsideI, outsideJ);
             
+            var moveSpeed = 0.14f;
             var seq = DOTween.Sequence();
-            seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutBack));
-            seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.InBack));
-            
             if (goOutside)
             {
-                seq.JoinCallback(gateView.Open);
+                var difference = Math.Max(Math.Abs(outsideI - pivotI), Math.Abs(outsideJ - pivotJ));
+                var duration = moveSpeed * difference;
+                seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.OutExpo));
+                seq.InsertCallback(duration * 0.1f, gateView.Open);
+                seq.AppendInterval(0.1f);
                 seq.AppendCallback(() => Object.Destroy(blockView.gameObject));
+            }
+            else
+            {
+                var difference = Math.Max(Math.Abs(targetI - pivotI), Math.Abs(targetJ - pivotJ));
+                var duration = moveSpeed * difference;
+                seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutExpo));
             }
             
             if (!_gameBoard.IsThereAnyBlock)
