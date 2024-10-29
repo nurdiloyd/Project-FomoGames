@@ -1090,7 +1090,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 330585545}
   gameUI: {fileID: 1123075280}
-  boardGround: {fileID: 0}
 --- !u!4 &1827333832
 Transform:
   m_ObjectHideFlags: 0
