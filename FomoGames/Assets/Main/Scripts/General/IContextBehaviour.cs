@@ -1,4 +1,4 @@
-namespace Main.Scripts
+namespace Main.Scripts.General
 {
     public interface IContextBehaviour : IContextUnit
     {

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace Main.Scripts
+namespace Main.Scripts.General
 {
     public class DataManager : IContextUnit
     {

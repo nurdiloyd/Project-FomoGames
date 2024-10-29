@@ -1,8 +1,7 @@
-using System.Collections.Generic;
 using Main.Scripts.Game;
 using UnityEngine;
 
-namespace Main.Scripts
+namespace Main.Scripts.General
 {
     public class ContextController : MonoBehaviour
     {
@@ -15,7 +14,6 @@ namespace Main.Scripts
         public GameInputController GameInputController;
         public GameManager GameManager;
         public CameraManager CameraManager;
-        private List<IContextUnit> _contexts;
         
         private void Awake()
         {

@@ -1,10 +1,10 @@
 using UnityEngine;
 
-namespace Main.Scripts
+namespace Main.Scripts.General
 {
     public class CameraManager : IContextUnit
     {
-        public Camera MainCamera { get; private set; }
+        private Camera MainCamera { get; set; }
         public float RenderDistance { get; private set; }
         
         public void Bind()

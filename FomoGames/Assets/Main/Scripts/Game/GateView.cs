@@ -1,7 +1,8 @@
 using DG.Tweening;
+using Main.Scripts.General;
 using UnityEngine;
 
-namespace Main.Scripts
+namespace Main.Scripts.Game
 {
     public class GateView : MonoBehaviour
     {

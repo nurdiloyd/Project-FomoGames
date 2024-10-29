@@ -1,10 +1,10 @@
 using System;
 using DG.Tweening;
-using Main.Scripts.Game;
+using Main.Scripts.General;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Main.Scripts
+namespace Main.Scripts.Game
 {
     public class GameManager : IContextUnit
     {

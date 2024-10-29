@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using Main.Scripts.General;
+using Main.Scripts.Utils;
 using UnityEngine;
 
-namespace Main.Scripts
+namespace Main.Scripts.Game
 {
     public class GameBoard
     {
