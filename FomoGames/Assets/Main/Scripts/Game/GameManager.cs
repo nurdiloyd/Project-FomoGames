@@ -42,11 +42,13 @@ namespace Main.Scripts
             var blockView = _gameBoard.GetBlock(id);
             var pivotI = blockView.PivotI;
             var pivotJ = blockView.PivotJ;
-            var (targetI, targetJ) = _gameBoard.GetTargetIndex(id, moveDirection,
-                out var outsideI, out var outsideJ, out var goOutside, out var gateView);
+            var willExit = _gameBoard.GetTargetIndex(id, moveDirection, 
+                out var targetI, out var targetJ, 
+                out var outsideI, out var outsideJ, 
+                out var gateView);
             
             _gameBoard.RemoveBlock(blockView.ID);
-            if (goOutside)
+            if (willExit)
             {
                 _gameBoard.ExitBlock(blockView.ID);
             }
@@ -62,32 +64,36 @@ namespace Main.Scripts
             }
             
             var targetPosition = _gameBoard.GetCellPosition(targetI, targetJ);
-            var outsidePosition = _gameBoard.GetCellPosition(outsideI, outsideJ);
+            var difference = Math.Max(Math.Abs(targetI - pivotI), Math.Abs(targetJ - pivotJ));
+            var duration = 0.14f * difference;
             
-            var moveSpeed = 0.14f;
-            var seq = DOTween.Sequence();
-            if (goOutside)
+            var seq = DOTween.Sequence().SetLink(blockView.gameObject);
+            if (willExit)
             {
-                var difference = Math.Max(Math.Abs(outsideI - pivotI), Math.Abs(outsideJ - pivotJ));
-                var duration = moveSpeed * difference;
-                seq.Append(blockView.transform.DOMove(outsidePosition, duration).SetEase(Ease.OutExpo));
-                seq.InsertCallback(duration * 0.1f, gateView.Open);
+                blockView.DisableCollider();
+                var outsidePosition = _gameBoard.GetCellPosition(outsideI, outsideJ);
+                var difference2 = Math.Max(Math.Abs(outsideI - targetI), Math.Abs(outsideJ - targetJ));
+                var duration2 = 0.1f * difference2;
+                
+                seq.AppendCallback(gateView.Open);
+                seq.Append(blockView.transform.DOMove((targetPosition + outsidePosition) / 2f, duration).SetEase(Ease.OutExpo));
+                seq.Append(blockView.transform.DOMove(outsidePosition, duration2).SetEase(Ease.Linear));
                 seq.AppendInterval(0.1f);
                 seq.AppendCallback(() => Object.Destroy(blockView.gameObject));
             }
             else
             {
-                var difference = Math.Max(Math.Abs(targetI - pivotI), Math.Abs(targetJ - pivotJ));
-                var duration = moveSpeed * difference;
                 seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutExpo));
             }
             
-            if (!_gameBoard.IsThereAnyBlock)
+            var isWin = !_gameBoard.IsThereAnyBlock;
+            var isLose = !HasMove;
+            if (isWin)
             {
                 GameController.Instance.DataManager.IncreaseCurrentLevelIndex();
                 seq.AppendCallback(_gameUI.ShowLevelWinDialog);
             }
-            else if (!HasMove)
+            else if (isLose)
             {
                 seq.AppendCallback(_gameUI.ShowLevelLoseDialog);
             }

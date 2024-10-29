@@ -156,6 +156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   meshRenderer: {fileID: 3346214535463516568}
+  boxCollider: {fileID: 6947220871121856818}
   trailRenderers:
   - {fileID: 4963030142947458739}
   - {fileID: 5914679567584807222}

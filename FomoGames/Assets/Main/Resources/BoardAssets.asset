@@ -38,6 +38,6 @@ MonoBehaviour:
   block2TextureYellowUp: {fileID: 2800000, guid: e3c23cac4d3f843fe9651aee90a33516, type: 3}
   colorBlue: {r: 0, g: 0.3647059, b: 0.9372549, a: 1}
   colorGreen: {r: 0.3050177, g: 1, b: 0, a: 1}
-  colorPurple: {r: 0.9647059, g: 0.31764707, b: 1, a: 1}
+  colorPurple: {r: 1, g: 0, b: 0.8039216, a: 1}
   colorRed: {r: 1, g: 0.16862746, b: 0, a: 1}
-  colorYellow: {r: 1, g: 0.82046974, b: 0, a: 1}
+  colorYellow: {r: 1, g: 0.6156863, b: 0, a: 1}

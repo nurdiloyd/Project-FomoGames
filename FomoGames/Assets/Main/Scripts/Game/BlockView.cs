@@ -10,6 +10,7 @@ namespace Main.Scripts
         private static readonly int EmissionColorProperty = Shader.PropertyToID("_EmissionColor");
         
         [SerializeField] private MeshRenderer meshRenderer;
+        [SerializeField] private Collider boxCollider;
         [SerializeField] private TrailRenderer[] trailRenderers;
         
         public int ID { get; private set; }
@@ -57,7 +58,7 @@ namespace Main.Scripts
             DOTween.To(() => color, x => color = x, HighlightColor, 0.2f).OnUpdate(() =>
             {
                 meshRenderer.material.SetColor(EmissionColorProperty, color);
-            });
+            }).SetLink(gameObject);
         }
         
         public void Deselect()
@@ -66,7 +67,12 @@ namespace Main.Scripts
             DOTween.To(() => color, x => color = x, DefaultColor, 0.2f).OnUpdate(() =>
             {
                 meshRenderer.material.SetColor(EmissionColorProperty, color);
-            });
+            }).SetLink(gameObject);
+        }
+        
+        public void DisableCollider()
+        {
+            boxCollider.enabled = false;
         }
     }
 }

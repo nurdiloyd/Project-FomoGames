@@ -12,6 +12,8 @@ namespace Main.Scripts
         public BlockColor GateColor { get; private set; }
         public BlockDirection GateDirection { get; private set; }
         
+        private Sequence _sequence;
+        
         public void Init(BlockDirection direction, BlockColor color)
         {
             GateDirection = direction;
@@ -28,10 +30,27 @@ namespace Main.Scripts
         
         public void Open()
         {
-            var seq = DOTween.Sequence();
-            seq.Append(gateRoot.DOLocalMoveY(-0.8f, 0.2f).SetEase(Ease.OutBack));
-            seq.AppendInterval(0.1f);
-            seq.Append(gateRoot.DOLocalMoveY(0, 0.6f).SetEase(Ease.OutBack));
+            if (_sequence != null && _sequence.IsActive())
+            {
+                _sequence.Kill();
+            }
+            
+            _sequence = DOTween.Sequence().SetLink(gameObject);
+            _sequence.Append(SpeedUp());
+            _sequence.Join(gateRoot.DOLocalMoveY(-0.8f, 0.2f).SetEase(Ease.OutBack));
+            _sequence.AppendInterval(0.2f);
+            _sequence.Append(gateRoot.DOLocalMoveY(0, 0.6f).SetEase(Ease.OutBack));
+            _sequence.Append(SpeedDown());
+        }
+        
+        private Tween SpeedUp()
+        {
+            return DOTween.To(() => animator.speed, x => animator.speed = x, 6, 0.1f).SetLink(gameObject);
+        }
+        
+        private Tween SpeedDown()
+        {
+            return DOTween.To(() => animator.speed, x => animator.speed = x, 1, 1f).SetLink(gameObject);
         }
     }
 }

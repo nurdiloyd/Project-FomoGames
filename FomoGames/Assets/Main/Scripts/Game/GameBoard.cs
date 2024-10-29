@@ -151,8 +151,10 @@ namespace Main.Scripts
             return _initialPosition + new Vector3(j, 0f, -i) * CellWidth;
         }
         
-        public (int i, int j) GetTargetIndex(int id, BlockDirection moveDirection, 
-            out float outsideI, out float outsideJ, out bool goOutside, out GateView gateView)
+        public bool GetTargetIndex(int id, BlockDirection moveDirection,
+            out int targetI, out int targetJ,
+            out float outsideI, out float outsideJ, 
+            out GateView gateView)
         {
             var blockView = GetBlock(id);
             var pivotI = blockView.PivotI;
@@ -161,12 +163,12 @@ namespace Main.Scripts
             var columnCount = blockView.ColumnCount;
             var blockColor = blockView.BlockColor;
             
-            var targetI = pivotI;
-            var targetJ = pivotJ;
+            targetI = pivotI;
+            targetJ = pivotJ;
             outsideI = -1;
             outsideJ = -1;
-            goOutside = false;
             gateView = null;
+            var willExit = false;
             var outsideOffset = 0.5f;
             
             if (moveDirection == BlockDirection.Down)
@@ -200,7 +202,7 @@ namespace Main.Scripts
                     {
                         outsideI = _boardBottom + 1 + outsideOffset;
                         outsideJ = targetJ;
-                        goOutside = true;
+                        willExit = true;
                     }
                 }
             }
@@ -235,7 +237,7 @@ namespace Main.Scripts
                     {
                         outsideI = _boardTop - rowCount - outsideOffset;
                         outsideJ = targetJ;
-                        goOutside = true;
+                        willExit = true;
                     }
                 }
             }
@@ -270,7 +272,7 @@ namespace Main.Scripts
                     {
                         outsideI = targetI;
                         outsideJ = _boardRight + 1 + outsideOffset;
-                        goOutside = true;
+                        willExit = true;
                     }
                 }
             }
@@ -305,12 +307,12 @@ namespace Main.Scripts
                     {
                         outsideI = targetI;
                         outsideJ = _boardLeft - columnCount - outsideOffset;
-                        goOutside = true;
+                        willExit = true;
                     }
                 }
             }
             
-            return (targetI, targetJ);
+            return willExit;
             
             bool CanExit(List<GateView> gates, out GateView gateView)
             {
