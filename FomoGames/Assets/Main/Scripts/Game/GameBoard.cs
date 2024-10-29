@@ -47,13 +47,19 @@ namespace Main.Scripts.Game
                 }
             }
             
+            CreateBoardGround();
+            SpawnBlocks(levelData.MovableInfo);
+            SpawnGates(levelData.ExitInfo);
+        }
+        
+        private void CreateBoardGround()
+        {
             var boardGroundPrefab = _gameManager.BoardAssets.boardGround;
             var boardGround = Object.Instantiate(boardGroundPrefab, _boardParent);
             boardGround.localScale = new Vector3(_columnCount, 1f, _rowCount) * 0.1f;
             boardGround.position = new Vector3(0, -0.01f, 0f);
-            
-            SpawnBlocks(levelData.MovableInfo);
-            SpawnGates(levelData.ExitInfo);
+            var tiling = new Vector2(_columnCount, _rowCount);
+            boardGround.GetComponent<MeshRenderer>().material.mainTextureScale = tiling;
         }
         
         private void SpawnBlocks(MovableInfo[] movableInfos)
