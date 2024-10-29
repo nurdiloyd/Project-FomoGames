@@ -30,6 +30,7 @@ namespace Main.Scripts.Game
         {
             var dataManager = ContextController.Instance.DataManager;
             var levelData = dataManager.GetCurrentLevelData();
+            _gameBoard.Clear();
             _gameBoard.Init(levelData);
             _moveCount = levelData.MoveLimit == 0 ? InfinityMove : levelData.MoveLimit;
             
@@ -47,16 +48,6 @@ namespace Main.Scripts.Game
                 out var outsideI, out var outsideJ, 
                 out var gateView);
             
-            _gameBoard.RemoveBlock(blockView.ID);
-            if (willExit)
-            {
-                _gameBoard.ExitBlock(blockView.ID);
-            }
-            else
-            {
-                _gameBoard.PlaceBlock(blockView.ID, targetI, targetJ);
-            }
-            
             var isMoved = !(targetI == pivotI && targetJ == pivotJ);
             if (isMoved)
             {
@@ -70,7 +61,8 @@ namespace Main.Scripts.Game
             var seq = DOTween.Sequence().SetLink(blockView.gameObject);
             if (willExit)
             {
-                blockView.DisableCollider();
+                _gameBoard.ExitBlock(blockView.ID);
+                
                 var outsidePosition = _gameBoard.GetCellPosition(outsideI, outsideJ);
                 var difference2 = Math.Max(Math.Abs(outsideI - targetI), Math.Abs(outsideJ - targetJ));
                 var duration2 = 0.1f * difference2;
@@ -83,6 +75,8 @@ namespace Main.Scripts.Game
             }
             else
             {
+                _gameBoard.ReplaceBlock(blockView.ID, targetI, targetJ);
+                
                 seq.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutExpo));
             }
             
@@ -108,18 +102,6 @@ namespace Main.Scripts.Game
             
             _moveCount -= 1;
             _gameUI.SetMoveCountText(_moveCount);
-        }
-        
-        public void TryAgain()
-        {
-            _gameBoard.Clear();
-            LoadLevel();
-        }
-        
-        public void NextLevel()
-        {
-            _gameBoard.Clear();
-            LoadLevel();
         }
     }
 }

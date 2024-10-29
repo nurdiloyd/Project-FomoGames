@@ -78,7 +78,50 @@ namespace Main.Scripts.Game
             }
         }
         
-        public void PlaceBlock(int id, int pivotI, int pivotJ)
+        private void SpawnGates(ExitInfo[] exitInfos)
+        {
+            for (var index = 0; index < exitInfos.Length; index++)
+            {
+                var exitInfo = exitInfos[index];
+                var direction = exitInfo.Direction;
+                var iOffset = direction == 0 ? -1 : direction == 2 ? 1 : 0;
+                var jOffset = direction == 1 ? 1 : direction == 3 ? -1 : 0;
+                var i = exitInfo.Row;
+                var j = exitInfo.Col;
+                var position = GetCellPosition(i + iOffset, j + jOffset);
+                var rotation = Quaternion.Euler(0f, 90f * direction, 0f);
+                var gateColor = exitInfo.Colors.ToBlockColor();
+                var gatePrefab = _gameManager.BoardAssets.gatePrefab;
+                
+                var gateView = Object.Instantiate(gatePrefab, position, rotation, _boardParent);
+                gateView.Init(direction.ToBlockDirection(), gateColor);
+                
+                PlaceGate(i, j, gateView);
+            }
+        }
+        
+        private void PlaceGate(int pivotI, int pivotJ, GateView gateView)
+        {
+            var cell = _board[pivotI, pivotJ];
+            cell.Gates ??= new List<GateView>();
+            cell.Gates.Add(gateView);
+        }
+        
+        public void ReplaceBlock(int id, int targetI, int targetJ)
+        {
+            RemoveBlock(id);
+            PlaceBlock(id, targetI, targetJ);
+        }
+        
+        public void ExitBlock(int id)
+        {
+            RemoveBlock(id);
+            var blockView = GetBlock(id);
+            blockView.DisableCollider();
+            _blocks.Remove(id);
+        }
+        
+        private void PlaceBlock(int id, int pivotI, int pivotJ)
         {
             var blockView = GetBlock(id);
             var rowCount = blockView.RowCount;
@@ -87,8 +130,8 @@ namespace Main.Scripts.Game
             
             SetBoardCells(pivotI, pivotJ, rowCount, columnCount, id);
         }
-        
-        public void RemoveBlock(int id)
+
+        private void RemoveBlock(int id)
         {
             var blockView = GetBlock(id);
             var rowCount = blockView.RowCount;
@@ -112,35 +155,6 @@ namespace Main.Scripts.Game
                     _board[i, j].BlockID = id;
                 }
             }
-        }
-        
-        private void SpawnGates(ExitInfo[] exitInfos)
-        {
-            for (var index = 0; index < exitInfos.Length; index++)
-            {
-                var exitInfo = exitInfos[index];
-                var direction = exitInfo.Direction;
-                var iOffset = direction == 0 ? -1 : direction == 2 ? 1 : 0;
-                var jOffset = direction == 1 ? 1 : direction == 3 ? -1 : 0;
-                var i = exitInfo.Row;
-                var j = exitInfo.Col;
-                var position = GetCellPosition(i + iOffset, j + jOffset);
-                var rotation = Quaternion.Euler(0f, 90f * direction, 0f);
-                var gateColor = exitInfo.Colors.ToBlockColor();
-                var gatePrefab = _gameManager.BoardAssets.gatePrefab;
-                
-                var gateView = Object.Instantiate(gatePrefab, position, rotation, _boardParent);
-                gateView.Init(direction.ToBlockDirection(), gateColor);
-                
-                PlaceGateToBoard(i, j, gateView);
-            }
-        }
-        
-        private void PlaceGateToBoard(int pivotI, int pivotJ, GateView gateView)
-        {
-            var cell = _board[pivotI, pivotJ];
-            cell.Gates ??= new List<GateView>();
-            cell.Gates.Add(gateView);
         }
         
         public BlockView GetBlock(int id)
@@ -336,14 +350,9 @@ namespace Main.Scripts.Game
             }
         }
         
-        public void ExitBlock(int id)
-        {
-            _blocks.Remove(id);
-        }
-        
         public void Clear()
         {
-            Object.Destroy(_boardParent.gameObject);
+            Object.Destroy(_boardParent?.gameObject);
             _boardParent = null;
             _blocks.Clear();
             _board = null;
