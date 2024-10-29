@@ -1,9 +1,8 @@
 using Main.Scripts.General;
-using UnityEngine;
 
 namespace Main.Scripts.Game
 {
-    public class LevelLoseDialog : MonoBehaviour
+    public class LevelLoseDialog : UIDialog
     {
         public void OnContinueButtonClick()
         {

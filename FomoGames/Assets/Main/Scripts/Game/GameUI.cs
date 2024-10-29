@@ -30,14 +30,16 @@ namespace Main.Scripts.Game
         
         public void ShowLevelWinDialog()
         {
-            var dialogPrefab = Resources.Load<GameObject>("LevelWinDialogPrefab");
-            Instantiate(dialogPrefab, transform);
+            var dialogPrefab = Resources.Load<LevelWinDialog>("LevelWinDialogPrefab");
+            var dialog = Instantiate(dialogPrefab, transform);
+            dialog.Show();
         }
         
         public void ShowLevelLoseDialog()
         {
-            var dialogPrefab = Resources.Load<GameObject>("LevelLoseDialogPrefab");
-            Instantiate(dialogPrefab, transform);
+            var dialogPrefab = Resources.Load<LevelLoseDialog>("LevelLoseDialogPrefab");
+            var dialog = Instantiate(dialogPrefab, transform);
+            dialog.Show();
         }
     }
 }

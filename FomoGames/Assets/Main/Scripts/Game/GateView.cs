@@ -38,7 +38,7 @@ namespace Main.Scripts.Game
             
             _sequence = DOTween.Sequence().SetLink(gameObject);
             _sequence.Append(SpeedUp());
-            _sequence.Join(gateRoot.DOLocalMoveY(-0.8f, 0.2f).SetEase(Ease.OutBack));
+            _sequence.Join(gateRoot.DOLocalMoveY(-0.67f, 0.2f).SetEase(Ease.OutBack));
             _sequence.AppendInterval(0.2f);
             _sequence.Append(gateRoot.DOLocalMoveY(0, 0.6f).SetEase(Ease.OutBack));
             _sequence.Append(SpeedDown());
