@@ -52,6 +52,18 @@ namespace Main.Scripts.Utils
             };
         }
         
+        public static int ToInt(this BlockDirection value)
+        {
+            return value switch
+            {
+                BlockDirection.Up => 0,
+                BlockDirection.Right => 1,
+                BlockDirection.Down => 2,
+                BlockDirection.Left => 3,
+                _ => 0
+            };
+        }
+        
         public static BlockDirection ToBlockDirection(this Vector2 moveDirection)
         {
             if (moveDirection == Vector2.up)

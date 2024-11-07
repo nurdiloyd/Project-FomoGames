@@ -10,17 +10,11 @@ namespace Main.Scripts.Game
         [SerializeField] private Animator animator;
         [SerializeField] private MeshRenderer[] meshRenderers;
         
-        public BlockColor GateColor { get; private set; }
-        public BlockDirection GateDirection { get; private set; }
-        
         private Sequence _sequence;
         
-        public void Init(BlockDirection direction, BlockColor color)
+        public void Init(Gate gate)
         {
-            GateDirection = direction;
-            GateColor = color;
-            
-            var matColor = ContextController.Instance.GameManager.BoardAssets.GetGateColor(GateColor);
+            var matColor = ContextController.Instance.GameManager.BoardAssets.GetGateColor(gate.GateColor);
             foreach (var meshRenderer in meshRenderers)
             {
                 meshRenderer.material.color = matColor;

@@ -9,7 +9,7 @@ namespace Main.Scripts.Game
         private Vector3 _startPosition;
         private Vector3 _endPosition;
         private GameManager _gameManager;
-        private BlockView _blockView;
+        private Block _block;
         private bool _blockSelected;
         private const float SwipeLengthThreshold = 0.1f;
         private const float SwipeAngleThreshold = 45f;
@@ -36,9 +36,9 @@ namespace Main.Scripts.Game
                 var isHit = Physics.Raycast(ray, out var hit);
                 if (isHit && hit.transform.CompareTag(Constants.BlockTag))
                 {
-                    _blockSelected = true;
-                    _blockView = hit.transform.GetComponent<BlockView>();
-                    _blockView.Select();
+                    var blockView = hit.transform.GetComponent<BlockView>();
+                    _gameManager.SelectBlock(blockView.ID, out _block);
+                    _blockSelected = _block != null;
                 }
             }
             
@@ -51,7 +51,7 @@ namespace Main.Scripts.Game
                 var direction = new Vector2((1 - Mathf.Abs(rad)) % 2, rad % 2);
                 var moveDirection = direction.ToBlockDirection();
                 
-                if (_blockView.CanMoveOnAxis(moveDirection))
+                if (_block.CanMoveOnAxis(moveDirection))
                 {
                     var worldPointA = _startPosition;
                     worldPointA.z = _cameraManager.RenderDistance;
@@ -64,13 +64,12 @@ namespace Main.Scripts.Game
                     var worldDistance = (worldPointA - worldPointB).magnitude;
                     var angle = Vector2.Angle(toward, direction);
                     
-                    var canMove = worldDistance > GameBoard.CellWidth * SwipeLengthThreshold && angle < SwipeAngleThreshold;
+                    var canMove = worldDistance > Board.CellWidth * SwipeLengthThreshold && angle < SwipeAngleThreshold;
                     if (canMove)
                     {
                         _blockSelected = false;
-                        _gameManager.MoveBlock(_blockView.ID, moveDirection);
-                        _blockView.Deselect();
-                        _blockView = null;
+                        _gameManager.DeselectBlock(_block.ID);
+                        _gameManager.MoveBlock(_block.ID, moveDirection);
                     }
                 }
             }
@@ -78,8 +77,7 @@ namespace Main.Scripts.Game
             if (Input.GetMouseButtonUp(0) && _blockSelected)
             {
                 _blockSelected = false;
-                _blockView.Deselect();
-                _blockView = null;
+                _gameManager.DeselectBlock(_block.ID);
             }
         }
     }

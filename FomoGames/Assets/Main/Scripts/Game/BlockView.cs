@@ -16,42 +16,21 @@ namespace Main.Scripts.Game
         [SerializeField] private TrailRenderer[] trailRenderers;
         
         public int ID { get; private set; }
-        public int PivotI { get; private set; }
-        public int PivotJ { get; private set; }
-        public int RowCount { get; private set; }
-        public int ColumnCount { get; private set; }
-        public BlockColor BlockColor { get; private set; }
-        private BlockDirection _blockDirection;
         
-        public void Init(int id, int length, BlockDirection blockDirection, BlockColor color)
+        public void Init(Block block)
         {
-            ID = id;
-            _blockDirection = blockDirection;
-            RowCount = blockDirection.IsHorizontal() ? 1 : length;
-            ColumnCount = blockDirection.IsVertical() ? 1 : length;
-            BlockColor = color;
+            ID = block.ID;
             
             var gameManager = ContextController.Instance.GameManager;
-            meshRenderer.material.mainTexture = gameManager.BoardAssets.GetBlockTexture(length, BlockColor, _blockDirection.IsHorizontal());
+            meshRenderer.material.mainTexture = gameManager.BoardAssets.GetBlockTexture(block.Length, block.BlockColor, block.BlockDirection.IsHorizontal());
             
-            var matColor = gameManager.BoardAssets.GetGateColor(BlockColor);
+            var matColor = gameManager.BoardAssets.GetGateColor(block.BlockColor);
             foreach (var trailRenderer in trailRenderers)
             {
                 trailRenderer.startColor = matColor;
                 matColor.a = 0;
                 trailRenderer.endColor = matColor;
             }
-        }
-        
-        public void SetPivot(int pivotI, int pivotJ)
-        {
-            PivotI = pivotI;
-            PivotJ = pivotJ;
-        }
-        
-        public bool CanMoveOnAxis(BlockDirection direction)
-        {
-            return _blockDirection == direction || _blockDirection == direction.GetInverse();
         }
         
         public void Select()
