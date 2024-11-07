@@ -23,7 +23,7 @@ namespace Main.Scripts.Game
         
         public void ManualUpdate()
         {
-            if (!_gameManager.HasMove)
+            if (!_gameManager.CanPlay)
             {
                 return;
             }

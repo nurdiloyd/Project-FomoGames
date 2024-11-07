@@ -23,6 +23,7 @@ namespace Main.Scripts.Game
                     var currentBoard = levelQueue.Dequeue();
                     if (!currentBoard.IsThereAnyBlock)
                     {
+                        board.MoveActions = currentBoard.MoveActions;
                         return level;
                     }
                     

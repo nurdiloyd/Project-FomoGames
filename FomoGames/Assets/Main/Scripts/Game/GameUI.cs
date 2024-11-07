@@ -1,3 +1,4 @@
+using Main.Scripts.General;
 using TMPro;
 using UnityEngine;
 
@@ -40,6 +41,11 @@ namespace Main.Scripts.Game
             var dialogPrefab = Resources.Load<LevelLoseDialog>("LevelLoseDialogPrefab");
             var dialog = Instantiate(dialogPrefab, transform);
             dialog.Show();
+        }
+        
+        public void SolveBoard()
+        {
+            ContextController.Instance.GameManager.SolveBoard();
         }
     }
 }

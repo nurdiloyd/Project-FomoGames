@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using Main.Scripts.General;
 using UnityEngine;
@@ -7,11 +8,15 @@ namespace Main.Scripts.Game
     public class GameManager : IContextUnit
     {
         public const int InfinityMove = 1000;
+        
         public bool HasMove => _moveCount > 0;
+        public bool CanPlay => HasMove && !_isSimulatingBoard;
         public BoardAssets BoardAssets { get; private set; }
+        
         private GameUI _gameUI;
         private GameBoardController _gameBoardController;
         private int _moveCount;
+        private bool _isSimulatingBoard;
         
         public void Bind()
         {
@@ -34,6 +39,10 @@ namespace Main.Scripts.Game
             
             _gameUI.SetLevelText(dataManager.User.levelIndex + 1);
             _gameUI.SetMoveCountText(_moveCount);
+            
+            _isSimulatingBoard = false;
+            var minMoveCount = BoardUtil.CalculateMinMoveCount(_gameBoardController.Board);
+            Debug.Log($"MinimumMoveCount: {(minMoveCount == -1 ? "∞" : minMoveCount)}");
         }
         
         public void SelectBlock(int id, out Block block)
@@ -46,7 +55,7 @@ namespace Main.Scripts.Game
             _gameBoardController.DeselectBlock(id);
         }
         
-        public void MoveBlock(int id, BlockDirection moveDirection)
+        public Sequence MoveBlock(int id, BlockDirection moveDirection)
         {
             var isMoved = _gameBoardController.TryMoveBlock(id, moveDirection, out var seq);
             if (isMoved)
@@ -65,6 +74,8 @@ namespace Main.Scripts.Game
                     seq.AppendCallback(_gameUI.ShowLevelLoseDialog);
                 }
             }
+            
+            return seq;
         }
         
         private void DecreaseMoveCount()
@@ -76,6 +87,29 @@ namespace Main.Scripts.Game
             
             _moveCount -= 1;
             _gameUI.SetMoveCountText(_moveCount);
+        }
+        
+        public void SolveBoard()
+        {
+            if (_isSimulatingBoard)
+            {
+                return;
+            }
+            
+            _isSimulatingBoard = true;
+            IterateMoves(_gameBoardController.Board.MoveActions);
+        }
+        
+        private void IterateMoves(Queue<MoveAction> moveActions)
+        {
+            if (moveActions == null || moveActions.Count <= 0)
+            {
+                _isSimulatingBoard = false;
+                return;
+            }
+            
+            var moveAction = moveActions.Dequeue();
+            MoveBlock(moveAction.BlockID, moveAction.MoveDirection).OnKill(() => IterateMoves(moveActions));
         }
     }
 }

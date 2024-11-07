@@ -15,6 +15,7 @@ namespace Main.Scripts.Game
         public readonly int ColumnCount;
         public readonly Dictionary<int, Block> Blocks = new();
         public readonly Dictionary<int, Gate> Gates = new();
+        public Queue<MoveAction> MoveActions = new();
         
         private readonly Cell[,] _board;
         private readonly int _boardTop;
@@ -83,6 +84,8 @@ namespace Main.Scripts.Game
                 var block = new Block(refBlock);
                 Blocks.Add(block.ID, block);
             }
+            
+            MoveActions = new Queue<MoveAction>(refBoard.MoveActions);
         }
         
         private void CreateBlocks(MovableInfo[] movableInfos)
@@ -372,6 +375,17 @@ namespace Main.Scripts.Game
                 ReplaceBlock(block.ID, targetI, targetJ);
             }
             
+            if (isMoved)
+            {
+                var moveAction = new MoveAction
+                {
+                    BlockID = block.ID,
+                    MoveDirection = moveDirection
+                };
+                
+                MoveActions.Enqueue(moveAction);
+            }
+            
             return isMoved;
         }
         
@@ -390,5 +404,11 @@ namespace Main.Scripts.Game
         {
             BlockID = id;
         }
+    }
+    
+    public struct MoveAction
+    {
+        public int BlockID;
+        public BlockDirection MoveDirection;
     }
 }
