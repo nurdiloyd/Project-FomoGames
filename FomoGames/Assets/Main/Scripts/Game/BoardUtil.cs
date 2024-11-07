@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Main.Scripts.Utils;
-using UnityEngine;
 
 namespace Main.Scripts.Game
 {
@@ -8,42 +7,51 @@ namespace Main.Scripts.Game
     {
         public static int CalculateMinMoveCount(Board board)
         {
-            var aa = 0;
+            var levelQueue = new Queue<Board>();
+            levelQueue.Enqueue(board);
             
-            var queue = new Queue<Board>();
-            queue.Enqueue(board);
-            
-            var visitedBoards = new HashSet<string>(); 
+            var visitedBoards = new HashSet<string>();
             var boardID = GetBoardID(board);
             visitedBoards.Add(boardID);
             
-            while (queue.Count > 0 && aa < 10000)
+            var isFindMinimum = false;
+            var level = 0;
+            while (true)
             {
-                var currentBoard = queue.Dequeue();
-                if (!currentBoard.IsThereAnyBlock)
+                var nextLevel = new Queue<Board>();
+                while (levelQueue.Count > 0)
                 {
-                    return currentBoard.MoveCount;
-                }
-                
-                aa += 1;
-                
-                var nextStateBoards = GetNextStateBoards(currentBoard);
-                foreach (var nextStateBoard in nextStateBoards)
-                {
-                    var nextStateBoardID = GetBoardID(nextStateBoard);
-                    if (visitedBoards.Contains(nextStateBoardID))// && nextStateBoard.MoveCount >= moveCount)
+                    var currentBoard = levelQueue.Dequeue();
+                    if (!currentBoard.IsThereAnyBlock)
                     {
-                        continue;
+                        isFindMinimum = true;
+                        break;
                     }
                     
-                    visitedBoards.Add(nextStateBoardID);
-                    queue.Enqueue(nextStateBoard);
+                    var nextStateBoards = GetNextStateBoards(currentBoard);
+                    foreach (var nextStateBoard in nextStateBoards)
+                    {
+                        var nextStateBoardID = GetBoardID(nextStateBoard);
+                        if (visitedBoards.Contains(nextStateBoardID))
+                        {
+                            continue;
+                        }
+                        
+                        visitedBoards.Add(nextStateBoardID);
+                        nextLevel.Enqueue(nextStateBoard);
+                    }
                 }
+                
+                if (nextLevel.Count <= 0 || isFindMinimum)
+                {
+                    break;
+                }
+                
+                levelQueue = nextLevel;
+                level += 1;
             }
             
-            Debug.Log($"var {aa}");
-            
-            return -1;
+            return isFindMinimum ? level : -1;
         }
         
         private static List<Board> GetNextStateBoards(Board board)

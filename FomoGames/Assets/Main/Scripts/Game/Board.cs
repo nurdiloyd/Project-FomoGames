@@ -11,7 +11,6 @@ namespace Main.Scripts.Game
         
         public bool IsThereAnyBlock => Blocks.Count > 0;
         
-        public int MoveCount;
         public readonly int RowCount;
         public readonly int ColumnCount;
         public readonly Dictionary<int, Block> Blocks = new();
@@ -84,8 +83,6 @@ namespace Main.Scripts.Game
                 var block = new Block(refBlock);
                 Blocks.Add(block.ID, block);
             }
-            
-            MoveCount = refBoard.MoveCount;
         }
         
         private void CreateBlocks(MovableInfo[] movableInfos)
@@ -376,11 +373,6 @@ namespace Main.Scripts.Game
             else
             {
                 ReplaceBlock(block.ID, targetI, targetJ);
-            }
-            
-            if (isMoved)
-            {
-                MoveCount += 1;
             }
             
             return isMoved;
