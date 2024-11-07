@@ -32,7 +32,7 @@ namespace Main.Scripts.Game
             SpawnGates();
             
             var minMoveCount = BoardUtil.CalculateMinMoveCount(_board);
-            Debug.Log($"MinimumMoveCount: {minMoveCount}");
+            Debug.Log($"MinimumMoveCount: {(minMoveCount == -1 ? "∞" : minMoveCount)}");
         }
         
         private void SpawnBoardGround()
