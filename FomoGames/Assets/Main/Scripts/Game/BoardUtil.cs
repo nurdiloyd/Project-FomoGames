@@ -3,20 +3,19 @@ using Main.Scripts.Utils;
 
 namespace Main.Scripts.Game
 {
-    public abstract class BoardUtil
+    public static class BoardUtil
     {
         public static int CalculateMinMoveCount(Board board)
         {
-            var levelQueue = new Queue<Board>();
-            levelQueue.Enqueue(board);
-            
             var visitedBoards = new HashSet<string>();
             var boardID = GetBoardID(board);
             visitedBoards.Add(boardID);
             
-            var isFindMinimum = false;
+            var levelQueue = new Queue<Board>();
+            levelQueue.Enqueue(board);
+            
             var level = 0;
-            while (true)
+            while (levelQueue.Count > 0)
             {
                 var nextLevel = new Queue<Board>();
                 while (levelQueue.Count > 0)
@@ -24,8 +23,7 @@ namespace Main.Scripts.Game
                     var currentBoard = levelQueue.Dequeue();
                     if (!currentBoard.IsThereAnyBlock)
                     {
-                        isFindMinimum = true;
-                        break;
+                        return level;
                     }
                     
                     var nextStateBoards = GetNextStateBoards(currentBoard);
@@ -42,16 +40,11 @@ namespace Main.Scripts.Game
                     }
                 }
                 
-                if (nextLevel.Count <= 0 || isFindMinimum)
-                {
-                    break;
-                }
-                
                 levelQueue = nextLevel;
                 level += 1;
             }
             
-            return isFindMinimum ? level : -1;
+            return -1;
         }
         
         private static List<Board> GetNextStateBoards(Board board)
@@ -61,7 +54,7 @@ namespace Main.Scripts.Game
             var blocks = board.Blocks.Values;
             foreach (var block in blocks)
             {
-                var moveDirections = GetMoveDirections(block);
+                var moveDirections = GetBlockMoveDirections(block);
                 foreach (var moveDirection in moveDirections)
                 {
                     var nextStateBoard = new Board(board);
@@ -76,7 +69,7 @@ namespace Main.Scripts.Game
             return nextStateBoards;
         }
         
-        private static BlockDirection[] GetMoveDirections(Block block)
+        private static BlockDirection[] GetBlockMoveDirections(Block block)
         {
             var moveDirections = new BlockDirection[2];
             

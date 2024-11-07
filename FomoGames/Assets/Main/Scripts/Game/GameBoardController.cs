@@ -23,8 +23,6 @@ namespace Main.Scripts.Game
         public void Init(LevelData levelData)
         {
             _board = new Board(levelData);
-            var minMoveCount = BoardUtil.CalculateMinMoveCount(_board);
-            Debug.Log($"MinimumMoveCount: {minMoveCount}");
             _gameManager = ContextController.Instance.GameManager;
             _boardParent = new GameObject("Board").transform;
             _initialPosition = new Vector3((1 - _board.ColumnCount) / 2f, 0f, -(1 - _board.RowCount) / 2f) * Board.CellWidth;
@@ -32,6 +30,9 @@ namespace Main.Scripts.Game
             SpawnBoardGround();
             SpawnBlocks();
             SpawnGates();
+            
+            var minMoveCount = BoardUtil.CalculateMinMoveCount(_board);
+            Debug.Log($"MinimumMoveCount: {minMoveCount}");
         }
         
         private void SpawnBoardGround()
@@ -90,7 +91,7 @@ namespace Main.Scripts.Game
             blockView.Deselect();
         }
         
-        public bool MoveBlock(int id, BlockDirection moveDirection, out Sequence sequence)
+        public bool TryMoveBlock(int id, BlockDirection moveDirection, out Sequence sequence)
         {
             var block = GetBlock(id);
             var blockView = _blockPairs[block];

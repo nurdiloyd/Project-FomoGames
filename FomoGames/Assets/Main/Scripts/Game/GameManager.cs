@@ -48,7 +48,7 @@ namespace Main.Scripts.Game
         
         public void MoveBlock(int id, BlockDirection moveDirection)
         {
-            var isMoved = _gameBoardController.MoveBlock(id, moveDirection, out var seq);
+            var isMoved = _gameBoardController.TryMoveBlock(id, moveDirection, out var seq);
             if (isMoved)
             {
                 DecreaseMoveCount();

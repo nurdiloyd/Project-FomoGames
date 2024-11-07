@@ -360,11 +360,8 @@ namespace Main.Scripts.Game
         public bool TryMoveBlock(int id, BlockDirection moveDirection)
         {
             var block = GetBlock(id);
-            var pivotI = block.PivotI;
-            var pivotJ = block.PivotJ;
-            var willExit = GetTargetIndex(block.ID, moveDirection, out var targetI, out var targetJ, 
-                out _, out _, out _);
-            var isMoved = !(targetI == pivotI && targetJ == pivotJ);
+            var willExit = GetTargetIndex(block.ID, moveDirection, out var targetI, out var targetJ, out _, out _, out _);
+            var isMoved = !(targetI == block.PivotI && targetJ == block.PivotJ);
             
             if (willExit)
             {
