@@ -23,6 +23,8 @@ namespace Main.Scripts.Game
         public void Init(LevelData levelData)
         {
             _board = new Board(levelData);
+            var minMoveCount = BoardUtil.CalculateMinMoveCount(_board);
+            Debug.Log($"MinimumMoveCount: {minMoveCount}");
             _gameManager = ContextController.Instance.GameManager;
             _boardParent = new GameObject("Board").transform;
             _initialPosition = new Vector3((1 - _board.ColumnCount) / 2f, 0f, -(1 - _board.RowCount) / 2f) * Board.CellWidth;

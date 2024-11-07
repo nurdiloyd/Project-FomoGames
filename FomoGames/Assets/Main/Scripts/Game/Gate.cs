@@ -5,8 +5,8 @@ namespace Main.Scripts.Game
         public readonly int ID;
         public readonly int PivotI;
         public readonly int PivotJ;
-        public BlockColor GateColor { get; private set; }
-        public BlockDirection GateDirection { get; private set; }
+        public readonly BlockColor GateColor;
+        public readonly BlockDirection GateDirection;
         
         public Gate(int id, BlockDirection gateDirection, BlockColor gateColor, int pivotI, int pivotJ)
         {
@@ -15,6 +15,15 @@ namespace Main.Scripts.Game
             GateColor = gateColor;
             PivotI = pivotI;
             PivotJ = pivotJ;
+        }
+        
+        public Gate(Gate refGate)
+        {
+            ID = refGate.ID;
+            GateDirection = refGate.GateDirection;
+            GateColor = refGate.GateColor;
+            PivotI = refGate.PivotI;
+            PivotJ = refGate.PivotJ;
         }
     }
 }

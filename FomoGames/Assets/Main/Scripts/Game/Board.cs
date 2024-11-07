@@ -11,6 +11,7 @@ namespace Main.Scripts.Game
         
         public bool IsThereAnyBlock => Blocks.Count > 0;
         
+        public int MoveCount;
         public readonly int RowCount;
         public readonly int ColumnCount;
         public readonly Dictionary<int, Block> Blocks = new();
@@ -43,6 +44,48 @@ namespace Main.Scripts.Game
             
             CreateGates(levelData.ExitInfo);
             CreateBlocks(levelData.MovableInfo);
+        }
+        
+        public Board(Board refBoard)
+        {
+            RowCount = refBoard.RowCount;
+            ColumnCount = refBoard.ColumnCount;
+            
+            _boardTop = refBoard._boardTop;
+            _boardRight = refBoard._boardRight;
+            _boardBottom = refBoard._boardBottom;
+            _boardLeft = refBoard._boardLeft;
+            
+            _board = new Cell[RowCount, ColumnCount];
+            for (var i = 0; i < RowCount; i++)
+            {
+                for (var j = 0; j < ColumnCount; j++)
+                {
+                    var refCell = refBoard._board[i, j];
+                    var cell = new Cell(refCell.BlockID);
+                    if (refCell.Gates != null)
+                    {
+                        foreach (var refCellGate in refCell.Gates)
+                        {
+                            var gate = new Gate(refCellGate);
+                            Gates.Add(gate.ID, gate);
+                            
+                            cell.Gates ??= new List<Gate>();
+                            cell.Gates.Add(gate);
+                        }
+                    }
+                    
+                    _board[i, j] = cell;
+                }
+            }
+            
+            foreach (var refBlock in refBoard.Blocks.Values)
+            {
+                var block = new Block(refBlock);
+                Blocks.Add(block.ID, block);
+            }
+            
+            MoveCount = refBoard.MoveCount;
         }
         
         private void CreateBlocks(MovableInfo[] movableInfos)
@@ -315,6 +358,32 @@ namespace Main.Scripts.Game
                 
                 return false;
             }
+        }
+        
+        public bool TryMoveBlock(int id, BlockDirection moveDirection)
+        {
+            var block = GetBlock(id);
+            var pivotI = block.PivotI;
+            var pivotJ = block.PivotJ;
+            var willExit = GetTargetIndex(block.ID, moveDirection, out var targetI, out var targetJ, 
+                out _, out _, out _);
+            var isMoved = !(targetI == pivotI && targetJ == pivotJ);
+            
+            if (willExit)
+            {
+                ExitBlock(block.ID);
+            }
+            else
+            {
+                ReplaceBlock(block.ID, targetI, targetJ);
+            }
+            
+            if (isMoved)
+            {
+                MoveCount += 1;
+            }
+            
+            return isMoved;
         }
         
         public Block GetBlock(int id)

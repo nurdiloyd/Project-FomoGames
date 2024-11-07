@@ -23,6 +23,18 @@ namespace Main.Scripts.Game
             Length = length;
         }
         
+        public Block(Block refBlock)
+        {
+            ID = refBlock.ID;
+            BlockDirection = refBlock.BlockDirection;
+            RowCount = refBlock.RowCount;
+            ColumnCount = refBlock.ColumnCount;
+            BlockColor = refBlock.BlockColor;
+            Length = refBlock.Length;
+            PivotJ = refBlock.PivotJ;
+            PivotI = refBlock.PivotI;
+        }
+        
         public void SetPivot(int pivotI, int pivotJ)
         {
             PivotI = pivotI;
