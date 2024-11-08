@@ -41,8 +41,6 @@ namespace Main.Scripts.Game
             _gameUI.SetMoveCountText(_moveCount);
             
             _isSimulatingBoard = false;
-            var minMoveCount = BoardUtil.CalculateMinMoveCount(_gameBoardController.Board);
-            Debug.Log($"MinimumMoveCount: {(minMoveCount == -1 ? "∞" : minMoveCount)}");
         }
         
         public void SelectBlock(int id, out Block block)
@@ -97,7 +95,7 @@ namespace Main.Scripts.Game
             }
             
             _isSimulatingBoard = true;
-            IterateMoves(_gameBoardController.Board.MoveActions);
+            IterateMoves(_gameBoardController.GetMoveActions());
         }
         
         private void IterateMoves(Queue<MoveAction> moveActions)

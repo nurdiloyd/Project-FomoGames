@@ -10,11 +10,10 @@ namespace Main.Scripts.Game
 {
     public class GameBoardController
     {
-        public bool IsThereAnyBlock => Board.IsThereAnyBlock;
-        
-        public Board Board { get; private set; }
+        public bool IsThereAnyBlock => _board.IsThereAnyBlock;
         
         private GameManager _gameManager;
+        private Board _board;
         private Transform _boardParent;
         private Vector3 _initialPosition;
         private readonly Dictionary<Block, BlockView> _blockPairs = new();
@@ -22,29 +21,32 @@ namespace Main.Scripts.Game
         
         public void Init(LevelData levelData)
         {
-            Board = new Board(levelData);
+            _board = new Board(levelData);
             _gameManager = ContextController.Instance.GameManager;
             _boardParent = new GameObject("Board").transform;
-            _initialPosition = new Vector3((1 - Board.ColumnCount) / 2f, 0f, -(1 - Board.RowCount) / 2f) * Board.CellWidth;
+            _initialPosition = new Vector3((1 - _board.ColumnCount) / 2f, 0f, -(1 - _board.RowCount) / 2f) * Board.CellWidth;
             
             SpawnBoardGround();
             SpawnBlocks();
             SpawnGates();
+            
+            var minMoveCount = BoardUtil.CalculateMinMoveCount(_board);
+            Debug.Log($"MinimumMoveCount: {(minMoveCount == -1 ? "∞" : minMoveCount)}");
         }
         
         private void SpawnBoardGround()
         {
             var boardGroundPrefab = _gameManager.BoardAssets.boardGround;
             var boardGround = Object.Instantiate(boardGroundPrefab, _boardParent);
-            boardGround.localScale = new Vector3(Board.ColumnCount, 1f, Board.RowCount) * 0.1f;
+            boardGround.localScale = new Vector3(_board.ColumnCount, 1f, _board.RowCount) * 0.1f;
             boardGround.position = new Vector3(0, -0.01f, 0f);
-            var tiling = new Vector2(Board.ColumnCount, Board.RowCount);
+            var tiling = new Vector2(_board.ColumnCount, _board.RowCount);
             boardGround.GetComponent<MeshRenderer>().material.mainTextureScale = tiling;
         }
         
         private void SpawnBlocks()
         {
-            var blocks = Board.Blocks;
+            var blocks = _board.Blocks;
             for (var i = 0; i < blocks.Count; i++)
             {
                 var block = blocks[i];
@@ -60,7 +62,7 @@ namespace Main.Scripts.Game
         
         private void SpawnGates()
         {
-            var gates = Board.Gates;
+            var gates = _board.Gates;
             for (var index = 0; index < gates.Count; index++)
             {
                 var gate = gates[index];
@@ -95,7 +97,7 @@ namespace Main.Scripts.Game
             var blockView = _blockPairs[block];
             var pivotI = block.PivotI;
             var pivotJ = block.PivotJ;
-            var willExit = Board.GetTargetIndex(block.ID, moveDirection, 
+            var willExit = _board.GetTargetIndex(block.ID, moveDirection, 
                 out var targetI, out var targetJ, 
                 out var outsideI, out var outsideJ, 
                 out var gate);
@@ -108,7 +110,7 @@ namespace Main.Scripts.Game
             sequence = DOTween.Sequence().SetLink(blockView.gameObject);
             if (willExit)
             {
-                Board.ExitBlock(block.ID);
+                _board.ExitBlock(block.ID);
                 _blockPairs.Remove(block);
                 
                 var outsidePosition = GetCellPosition(outsideI, outsideJ);
@@ -125,7 +127,7 @@ namespace Main.Scripts.Game
             }
             else
             {
-                Board.ReplaceBlock(block.ID, targetI, targetJ);
+                _board.ReplaceBlock(block.ID, targetI, targetJ);
                 
                 sequence.Append(blockView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutExpo));
             }
@@ -135,7 +137,7 @@ namespace Main.Scripts.Game
         
         private Block GetBlock(int id)
         {
-            return Board.GetBlock(id);
+            return _board.GetBlock(id);
         }
         
         private Vector3 GetCellPosition(float i, float j)
@@ -143,11 +145,16 @@ namespace Main.Scripts.Game
             return _initialPosition + new Vector3(j, 0f, -i) * Board.CellWidth;
         }
         
+        public Queue<MoveAction> GetMoveActions()
+        {
+            return _board.MoveActions;
+        }
+        
         public void Clear()
         {
             Object.Destroy(_boardParent?.gameObject);
             _boardParent = null;
-            Board = null;
+            _board = null;
         }
     }
 }
