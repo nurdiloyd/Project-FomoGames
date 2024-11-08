@@ -9,8 +9,8 @@ namespace Main.Scripts.Game
     {
         public const int InfinityMove = 1000;
         
-        public bool HasMove => _moveCount > 0;
         public bool CanPlay => HasMove && !_isSimulatingBoard;
+        private bool HasMove => _moveCount > 0;
         public BoardAssets BoardAssets { get; private set; }
         
         private GameUI _gameUI;
@@ -110,6 +110,27 @@ namespace Main.Scripts.Game
             
             var moveAction = moveActions.Dequeue();
             MoveBlock(moveAction.BlockID, moveAction.MoveDirection).OnKill(() => IterateMoves(moveActions));
+        }
+        
+        public void NextLevel()
+        {
+            if (!CanPlay)
+            {
+                return;
+            }
+            
+            ContextController.Instance.DataManager.IncreaseCurrentLevelIndex();
+            LoadLevel();
+        }
+        
+        public void RestartLevel()
+        {
+            if (!CanPlay)
+            {
+                return;
+            }
+            
+            LoadLevel();
         }
     }
 }

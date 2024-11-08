@@ -69,6 +69,7 @@ namespace Main.Scripts.Game
                 var gatePrefab = _gameManager.BoardAssets.gatePrefab;
                 var gateView = Object.Instantiate(gatePrefab, position, rotation, _boardParent);
                 gateView.Init(gate);
+                gateView.PlayCreationAnimation();
                 
                 _gatePairs.Add(gate, gateView);
             }

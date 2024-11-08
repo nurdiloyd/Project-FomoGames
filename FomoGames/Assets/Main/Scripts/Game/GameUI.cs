@@ -47,5 +47,15 @@ namespace Main.Scripts.Game
         {
             ContextController.Instance.GameManager.SolveBoard();
         }
+        
+        public void NextLevel()
+        {
+            ContextController.Instance.GameManager.NextLevel();
+        }
+        
+        public void RestartLevel()
+        {
+            ContextController.Instance.GameManager.RestartLevel();
+        }
     }
 }
